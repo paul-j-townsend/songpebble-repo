@@ -1,0 +1,2 @@
+tests/unit/validateEnv.test.ts:SUPABASE_SERVICE_ROLE_KEY
+tests/unit/validateEnv.test.ts:NEXT_PUBLIC_SUPABASE_ANON_KEY
