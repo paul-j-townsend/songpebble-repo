@@ -11,9 +11,11 @@ import { stripe, getStripePriceId, getBaseUrl } from '@/lib/stripe'
  * Flow:
  * 1. Validate form data with Zod
  * 2. Create order in Supabase with status 'pending'
- * 3. Create Stripe Checkout session
- * 4. Update order with stripe_session_id
- * 5. Return checkout URL to frontend
+ * 3. Insert to_characters (recipients) if provided
+ * 4. Insert senders if provided
+ * 5. Create Stripe Checkout session
+ * 6. Update order with stripe_session_id
+ * 7. Return checkout URL to frontend
  */
 export async function POST(request: NextRequest) {
   try {
@@ -59,9 +61,9 @@ export async function POST(request: NextRequest) {
 
     console.log('Order created:', order.id)
 
-    // Step 1.5: Insert characters if any were provided
-    if (formData.characters && formData.characters.length > 0) {
-      const charactersToInsert = formData.characters.map((char) => ({
+    // Step 1.5: Insert to_characters (recipients) if any were provided
+    if (formData.toCharacters && formData.toCharacters.length > 0) {
+      const toCharactersToInsert = formData.toCharacters.map((char) => ({
         order_id: order.id,
         character_name: char.characterName,
         character_gender: char.characterGender || null,
@@ -69,21 +71,45 @@ export async function POST(request: NextRequest) {
         character_mention: char.characterMention || null,
       }))
 
-      const { error: charactersError } = await supabaseAdmin
-        .from('characters')
-        .insert(charactersToInsert)
+      const { error: toCharactersError } = await supabaseAdmin
+        .from('to_characters')
+        .insert(toCharactersToInsert)
 
-      if (charactersError) {
-        console.error('Failed to insert characters:', charactersError)
-        // Delete the order since we couldn't insert characters
+      if (toCharactersError) {
+        console.error('Failed to insert to_characters:', toCharactersError)
+        // Delete the order since we couldn't insert to_characters
         await supabaseAdmin.from('orders').delete().eq('id', order.id)
         return NextResponse.json(
-          { error: 'Failed to save character details' },
+          { error: 'Failed to save recipient details' },
           { status: 500 }
         )
       }
 
-      console.log(`Inserted ${formData.characters.length} character(s) for order ${order.id}`)
+      console.log(`Inserted ${formData.toCharacters.length} recipient(s) for order ${order.id}`)
+    }
+
+    // Step 1.6: Insert senders if any were provided
+    if (formData.senders && formData.senders.length > 0) {
+      const sendersToInsert = formData.senders.map((sender) => ({
+        order_id: order.id,
+        sender_name: sender.senderName,
+      }))
+
+      const { error: sendersError } = await supabaseAdmin
+        .from('senders')
+        .insert(sendersToInsert)
+
+      if (sendersError) {
+        console.error('Failed to insert senders:', sendersError)
+        // Delete the order and to_characters since we couldn't insert senders
+        await supabaseAdmin.from('orders').delete().eq('id', order.id)
+        return NextResponse.json(
+          { error: 'Failed to save sender details' },
+          { status: 500 }
+        )
+      }
+
+      console.log(`Inserted ${formData.senders.length} sender(s) for order ${order.id}`)
     }
 
     // Step 2: Create Stripe Checkout session
