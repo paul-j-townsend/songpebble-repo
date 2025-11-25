@@ -33,7 +33,7 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
 
         <Link
           href="/"
-          className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+          className="inline-block bg-christmas-red text-white px-6 py-3 rounded-lg font-medium hover:bg-christmas-red-dark transition-colors"
         >
           Return to Home
         </Link>
@@ -60,18 +60,18 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
       </div>
 
       <h1 className="text-3xl font-bold text-gray-900 mb-4">
-        Thank You for Your Order!
+        🎄 Thank You for Your Order! 🎅
       </h1>
 
       <p className="text-lg text-gray-600 mb-2">
-        Your payment has been successfully processed.
+        Your payment has been successfully processed. Your Christmas song is on its way!
       </p>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8 max-w-md mx-auto">
-        <p className="text-sm font-medium text-blue-900 mb-1">
+      <div className="bg-christmas-snow border border-christmas-gold rounded-lg p-6 mb-8 max-w-md mx-auto">
+        <p className="text-sm font-medium text-christmas-red-dark mb-1">
           Order ID
         </p>
-        <p className="text-xs text-blue-700 font-mono break-all">
+        <p className="text-xs text-christmas-red font-mono break-all">
           {orderId}
         </p>
       </div>
@@ -81,7 +81,7 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
 
         <ol className="space-y-3 text-sm text-gray-600">
           <li className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-medium">
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-christmas-snow text-christmas-red flex items-center justify-center text-xs font-medium">
               1
             </span>
             <span>
@@ -90,7 +90,7 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
           </li>
 
           <li className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-medium">
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-christmas-snow text-christmas-red flex items-center justify-center text-xs font-medium">
               2
             </span>
             <span>
@@ -99,7 +99,7 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
           </li>
 
           <li className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-medium">
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-christmas-snow text-christmas-red flex items-center justify-center text-xs font-medium">
               3
             </span>
             <span>
@@ -115,7 +115,7 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
 
       <Link
         href="/"
-        className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+        className="inline-block bg-christmas-red text-white px-6 py-3 rounded-lg font-medium hover:bg-christmas-red-dark transition-colors"
       >
         Return to Home
       </Link>
@@ -134,7 +134,7 @@ export default function ThankYouPage({
         <Suspense
           fallback={
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-christmas-red mx-auto"></div>
               <p className="mt-4 text-gray-600">Loading...</p>
             </div>
           }

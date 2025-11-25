@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
+import { generateSongForOrder } from '@/lib/generateSong'
 import Stripe from 'stripe'
 
 /**
@@ -108,6 +109,29 @@ export async function POST(request: NextRequest) {
         }
 
         console.log('Order marked as paid:', orderId)
+
+        // Trigger song generation via API.box
+        try {
+          const generationResult = await generateSongForOrder(orderId)
+          if (generationResult.success) {
+            console.log(`Song generation started for order ${orderId}, taskId: ${generationResult.taskId}`)
+          } else {
+            console.error(`Failed to start song generation for order ${orderId}:`, generationResult.error)
+            // Update order status to failed if generation couldn't start
+            await supabaseAdmin
+              .from('orders')
+              .update({
+                status: 'failed',
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', orderId)
+          }
+        } catch (error) {
+          console.error('Error triggering song generation:', error)
+          // Don't fail the webhook, but log the error
+          // The order is still marked as paid, we can retry generation later
+        }
+
         break
       }
 
