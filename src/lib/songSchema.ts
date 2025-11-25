@@ -32,6 +32,30 @@ export const songFormSchema = z.object({
     .max(100, 'Song mood must be less than 100 characters')
     .optional(),
 
+  // Suno AI parameters
+  vocalGender: z
+    .enum(['male', 'female', 'mixed', 'instrumental', ''])
+    .optional(),
+
+  tempo: z
+    .enum(['slow', 'medium', 'fast', 'very-fast', ''])
+    .optional(),
+
+  instruments: z
+    .array(z.enum([
+      'guitar',
+      'piano',
+      'synth',
+      'drums',
+      'strings',
+      'brass',
+      'bass',
+      'electronic',
+      'orchestral',
+      'vocals-only'
+    ]))
+    .optional(),
+
   lyricsInput: z
     .string()
     .min(10, 'Lyrics must be at least 10 characters')
@@ -52,6 +76,9 @@ export const orderSchema = z.object({
   song_title: z.string(),
   song_style: z.string(),
   song_mood: z.string().optional(),
+  vocal_gender: z.string().optional(),
+  tempo: z.string().optional(),
+  instruments: z.array(z.string()).optional(),
   lyrics_input: z.string(),
   stripe_session_id: z.string().optional(),
   stripe_payment_intent_id: z.string().optional(),
