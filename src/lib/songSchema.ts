@@ -60,10 +60,59 @@ export const songFormSchema = z.object({
     .string()
     .min(10, 'Lyrics must be at least 10 characters')
     .max(2000, 'Lyrics must be less than 2000 characters'),
+
+  // To Characters (0-8 recipients with full details)
+  toCharacters: z
+    .array(
+      z.object({
+        characterName: z
+          .string()
+          .min(1, 'Character name is required')
+          .max(100, 'Character name must be less than 100 characters'),
+        characterGender: z
+          .enum(['male', 'female', 'other'])
+          .optional(),
+        characterInterests: z
+          .string()
+          .max(500, 'Character interests must be less than 500 characters')
+          .optional(),
+        characterMention: z
+          .string()
+          .max(500, 'Character mention must be less than 500 characters')
+          .optional(),
+      })
+    )
+    .max(8, 'Maximum 8 recipients allowed')
+    .default([]),
+
+  // Senders (0-8 senders with just names)
+  senders: z
+    .array(
+      z.object({
+        senderName: z
+          .string()
+          .min(1, 'Sender name is required')
+          .max(100, 'Sender name must be less than 100 characters'),
+      })
+    )
+    .max(8, 'Maximum 8 senders allowed')
+    .default([]),
 })
 
 // Export the inferred TypeScript type
 export type SongFormData = z.infer<typeof songFormSchema>
+
+// Export types for convenience
+export type ToCharacter = {
+  characterName: string
+  characterGender?: 'male' | 'female' | 'other'
+  characterInterests?: string
+  characterMention?: string
+}
+
+export type Sender = {
+  senderName: string
+}
 
 /**
  * Order data schema (what gets stored in database)

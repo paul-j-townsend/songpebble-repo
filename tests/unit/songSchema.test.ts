@@ -43,6 +43,166 @@ describe('songFormSchema', () => {
       )
     }
   })
+
+  it('accepts valid characters array', () => {
+    const parsed = songFormSchema.safeParse({
+      ...validPayload,
+      characters: [
+        {
+          characterName: 'Alice',
+          characterGender: 'female' as const,
+          characterInterests: 'painting, music, hiking',
+          characterMention: 'always wears colorful socks',
+        },
+        {
+          characterName: 'Bob',
+          characterGender: 'male' as const,
+          characterInterests: 'coding, gaming',
+          characterMention: 'loves coffee',
+        },
+      ],
+    })
+    expect(parsed.success).toBe(true)
+  })
+
+  it('accepts empty characters array', () => {
+    const parsed = songFormSchema.safeParse({
+      ...validPayload,
+      characters: [],
+    })
+    expect(parsed.success).toBe(true)
+  })
+
+  it('accepts payload without characters field', () => {
+    const parsed = songFormSchema.safeParse(validPayload)
+    expect(parsed.success).toBe(true)
+  })
+
+  it('accepts characters with only required name field', () => {
+    const parsed = songFormSchema.safeParse({
+      ...validPayload,
+      characters: [
+        {
+          characterName: 'Charlie',
+        },
+      ],
+    })
+    expect(parsed.success).toBe(true)
+  })
+
+  it('accepts all valid gender options', () => {
+    const genders: Array<'male' | 'female' | 'other'> = ['male', 'female', 'other']
+
+    genders.forEach((gender) => {
+      const parsed = songFormSchema.safeParse({
+        ...validPayload,
+        characters: [
+          {
+            characterName: 'Test Character',
+            characterGender: gender,
+          },
+        ],
+      })
+      expect(parsed.success).toBe(true)
+    })
+  })
+
+  it('rejects character with missing name', () => {
+    const parsed = songFormSchema.safeParse({
+      ...validPayload,
+      characters: [
+        {
+          characterGender: 'female' as const,
+          characterInterests: 'reading',
+        },
+      ],
+    })
+    expect(parsed.success).toBe(false)
+  })
+
+  it('rejects character with empty name', () => {
+    const parsed = songFormSchema.safeParse({
+      ...validPayload,
+      characters: [
+        {
+          characterName: '',
+          characterGender: 'male' as const,
+        },
+      ],
+    })
+    expect(parsed.success).toBe(false)
+  })
+
+  it('rejects character name that is too long', () => {
+    const parsed = songFormSchema.safeParse({
+      ...validPayload,
+      characters: [
+        {
+          characterName: 'a'.repeat(101), // 101 characters
+        },
+      ],
+    })
+    expect(parsed.success).toBe(false)
+  })
+
+  it('rejects character interests that are too long', () => {
+    const parsed = songFormSchema.safeParse({
+      ...validPayload,
+      characters: [
+        {
+          characterName: 'David',
+          characterInterests: 'a'.repeat(501), // 501 characters
+        },
+      ],
+    })
+    expect(parsed.success).toBe(false)
+  })
+
+  it('rejects character mention that is too long', () => {
+    const parsed = songFormSchema.safeParse({
+      ...validPayload,
+      characters: [
+        {
+          characterName: 'Eve',
+          characterMention: 'a'.repeat(501), // 501 characters
+        },
+      ],
+    })
+    expect(parsed.success).toBe(false)
+  })
+
+  it('rejects more than 8 characters', () => {
+    const nineCharacters = Array.from({ length: 9 }, (_, i) => ({
+      characterName: `Character ${i + 1}`,
+    }))
+
+    const parsed = songFormSchema.safeParse({
+      ...validPayload,
+      characters: nineCharacters,
+    })
+    expect(parsed.success).toBe(false)
+    if (!parsed.success) {
+      expect(parsed.error.flatten().fieldErrors.characters).toContain(
+        'Maximum 8 characters allowed'
+      )
+    }
+  })
+
+  it('accepts exactly 8 characters', () => {
+    const eightCharacters = Array.from({ length: 8 }, (_, i) => {
+      const genders: Array<'male' | 'female' | 'other'> = ['male', 'female', 'other']
+      return {
+        characterName: `Character ${i + 1}`,
+        characterGender: genders[i % 3],
+      }
+    })
+
+    const parsed = songFormSchema.safeParse({
+      ...validPayload,
+      characters: eightCharacters,
+    })
+    expect(parsed.success).toBe(true)
+  })
 })
 
 describe('orderSchema', () => {

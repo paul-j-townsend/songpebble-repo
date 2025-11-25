@@ -59,6 +59,33 @@ export async function POST(request: NextRequest) {
 
     console.log('Order created:', order.id)
 
+    // Step 1.5: Insert characters if any were provided
+    if (formData.characters && formData.characters.length > 0) {
+      const charactersToInsert = formData.characters.map((char) => ({
+        order_id: order.id,
+        character_name: char.characterName,
+        character_gender: char.characterGender || null,
+        character_interests: char.characterInterests || null,
+        character_mention: char.characterMention || null,
+      }))
+
+      const { error: charactersError } = await supabaseAdmin
+        .from('characters')
+        .insert(charactersToInsert)
+
+      if (charactersError) {
+        console.error('Failed to insert characters:', charactersError)
+        // Delete the order since we couldn't insert characters
+        await supabaseAdmin.from('orders').delete().eq('id', order.id)
+        return NextResponse.json(
+          { error: 'Failed to save character details' },
+          { status: 500 }
+        )
+      }
+
+      console.log(`Inserted ${formData.characters.length} character(s) for order ${order.id}`)
+    }
+
     // Step 2: Create Stripe Checkout session
     const baseUrl = getBaseUrl()
     const priceId = getStripePriceId()
