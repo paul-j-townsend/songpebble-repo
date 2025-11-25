@@ -85,7 +85,7 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
               1
             </span>
             <span>
-              We&apos;ll process your order and create your custom AI-generated song
+              We&apos;ll process your order and create your custom song
             </span>
           </li>
 
