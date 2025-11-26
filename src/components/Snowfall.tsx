@@ -31,7 +31,7 @@ export default function Snowfall() {
       {snowflakes.map((flake) => (
         <div
           key={flake.id}
-          className="absolute text-white animate-snowfall"
+          className="absolute text-christmas-snow animate-snowfall"
           style={{
             left: flake.left,
             animationDuration: flake.animationDuration,

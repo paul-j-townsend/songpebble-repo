@@ -5,7 +5,7 @@ import TestApiButton from "@/components/TestApiButton";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-slate-50 relative">
+    <main className="min-h-screen bg-christmas-snow relative">
       <Snowfall />
       <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-10 relative z-10">
         <header className="flex flex-col gap-4">
@@ -18,11 +18,11 @@ export default function HomePage() {
               priority
               className="h-[4.8rem] w-auto"
             />
-            <div className="text-4xl animate-sparkle">✨</div>
+            <div className="text-4xl animate-sparkle text-christmas-gold">✨</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-2xl">🎄</span>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-christmas-red-dark">
               Tell us your story and we&apos;ll turn it into a custom Christmas song! Ho ho ho!
             </p>
             <span className="text-2xl">🎅</span>

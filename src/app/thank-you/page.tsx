@@ -7,9 +7,9 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
   if (!orderId) {
     return (
       <div className="text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-6">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-christmas-red bg-opacity-20 mb-6">
           <svg
-            className="w-8 h-8 text-red-600"
+            className="w-8 h-8 text-christmas-red"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -27,7 +27,7 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
           Order Not Found
         </h1>
 
-        <p className="text-lg text-gray-600 mb-8">
+        <p className="text-lg text-christmas-red-dark mb-8">
           We couldn&apos;t find your order. Please check the URL or try submitting the form again.
         </p>
 
@@ -43,9 +43,9 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
 
   return (
     <div className="text-center">
-      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-6">
+      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-christmas-green bg-opacity-20 mb-6">
         <svg
-          className="w-8 h-8 text-green-600"
+          className="w-8 h-8 text-christmas-green"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -63,7 +63,7 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
         🎄 Thank You for Your Order! 🎅
       </h1>
 
-      <p className="text-lg text-gray-600 mb-2">
+      <p className="text-lg text-christmas-green-dark mb-2">
         Your payment has been successfully processed. Your Christmas song is on its way!
       </p>
 
@@ -76,7 +76,7 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
         </p>
       </div>
 
-      <div className="space-y-4 text-left max-w-md mx-auto bg-gray-50 p-6 rounded-lg mb-8">
+      <div className="space-y-4 text-left max-w-md mx-auto bg-christmas-snow border border-christmas-gold-light p-6 rounded-lg mb-8">
         <h2 className="font-semibold text-gray-900">What happens next?</h2>
 
         <ol className="space-y-3 text-sm text-gray-600">
@@ -129,13 +129,13 @@ export default function ThankYouPage({
   searchParams: { order_id?: string }
 }) {
   return (
-    <main className="min-h-screen bg-slate-50 flex items-center justify-center">
+    <main className="min-h-screen bg-christmas-snow flex items-center justify-center">
       <div className="max-w-2xl mx-auto px-4 py-12">
         <Suspense
           fallback={
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-christmas-red mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading...</p>
+              <p className="mt-4 text-christmas-red-dark">Loading...</p>
             </div>
           }
         >

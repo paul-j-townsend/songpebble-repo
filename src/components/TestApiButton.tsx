@@ -69,37 +69,37 @@ export default function TestApiButton() {
   }
 
   return (
-    <div className="mt-4 p-4 border border-gray-300 rounded-lg bg-white">
+    <div className="mt-4 p-4 border border-christmas-gold rounded-lg bg-white">
       <button
         onClick={handleTestApi}
         disabled={isLoading}
-        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+        className="px-4 py-2 bg-christmas-red text-white rounded hover:bg-christmas-red-dark disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
       >
         {isLoading ? 'Testing API...' : 'Test API.box'}
       </button>
 
       {result && (
-        <div className={`mt-4 p-3 rounded ${result.success ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+        <div className={`mt-4 p-3 rounded ${result.success ? 'bg-christmas-green bg-opacity-10 border border-christmas-green' : 'bg-christmas-red bg-opacity-10 border border-christmas-red'}`}>
           {result.success ? (
             <div>
-              <p className="text-green-800 font-semibold">✅ {result.message}</p>
+              <p className="text-christmas-green-dark font-semibold">✅ {result.message}</p>
               {result.taskId && (
-                <p className="text-sm text-green-700 mt-2">
-                  Task ID: <code className="bg-green-100 px-2 py-1 rounded">{result.taskId}</code>
+                <p className="text-sm text-christmas-green-dark mt-2">
+                  Task ID: <code className="bg-christmas-green bg-opacity-20 px-2 py-1 rounded">{result.taskId}</code>
                 </p>
               )}
             </div>
           ) : (
             <div>
-              <p className="text-red-800 font-semibold">❌ Error</p>
-              <p className="text-sm text-red-700 mt-2">{result.error || 'Unknown error occurred'}</p>
+              <p className="text-christmas-red-dark font-semibold">❌ Error</p>
+              <p className="text-sm text-christmas-red-dark mt-2">{result.error || 'Unknown error occurred'}</p>
               {result.apiCode === 429 && (
-                <p className="text-sm text-red-600 mt-2 font-semibold">
+                <p className="text-sm text-christmas-red-dark mt-2 font-semibold">
                   ⚠️ Insufficient credits - Please top up your API.box account
                 </p>
               )}
               {result.apiCode && (
-                <p className="text-xs text-red-600 mt-1">API Code: {result.apiCode}</p>
+                <p className="text-xs text-christmas-red-dark mt-1">API Code: {result.apiCode}</p>
               )}
             </div>
           )}

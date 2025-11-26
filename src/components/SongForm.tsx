@@ -598,7 +598,7 @@ Merry Christmas to all, and to all a good night!`,
                 })
               }}
               disabled={toCharacterFields.length >= 8}
-              className="flex items-center gap-2 px-4 py-2 bg-christmas-red text-white text-sm font-medium rounded-lg hover:bg-christmas-red-dark focus:outline-none focus:ring-2 focus:ring-christmas-gold focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-christmas-red text-white text-sm font-medium rounded-lg hover:bg-christmas-red-dark hover:scale-105 focus:outline-none focus:ring-2 focus:ring-christmas-gold focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -909,7 +909,7 @@ Merry Christmas to all, and to all a good night!`,
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-christmas-red text-white py-3 px-6 rounded-lg font-medium hover:bg-christmas-red-dark focus:outline-none focus:ring-2 focus:ring-christmas-gold focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full bg-christmas-red text-white py-3 px-6 rounded-lg font-medium hover:bg-christmas-red-dark hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-christmas-gold focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
         >
           {isSubmitting ? 'Processing...' : 'Create My Song - £20'}
         </button>
@@ -950,7 +950,7 @@ Merry Christmas to all, and to all a good night!`,
           <button
             type="button"
             onClick={loadDefaultValues}
-            className="flex items-center justify-center gap-2 bg-white text-christmas-green py-2 px-4 rounded-lg font-medium border border-christmas-green-light hover:bg-christmas-snow focus:outline-none focus:ring-2 focus:ring-christmas-gold focus:ring-offset-2 transition-colors"
+            className="flex items-center justify-center gap-2 bg-white text-christmas-green py-2 px-4 rounded-lg font-medium border border-christmas-green-light hover:bg-christmas-snow hover:scale-105 focus:outline-none focus:ring-2 focus:ring-christmas-gold focus:ring-offset-2 transition-all duration-200"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -961,7 +961,7 @@ Merry Christmas to all, and to all a good night!`,
           <button
             type="button"
             onClick={clearAllFields}
-            className="flex items-center justify-center gap-2 bg-white text-gray-700 py-2 px-4 rounded-lg font-medium border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+            className="flex items-center justify-center gap-2 bg-white text-gray-700 py-2 px-4 rounded-lg font-medium border border-gray-300 hover:bg-gray-50 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
