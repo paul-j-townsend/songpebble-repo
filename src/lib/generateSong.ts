@@ -1,5 +1,5 @@
 import { supabaseAdmin } from './supabaseAdmin'
-import { buildChristmasStyle, generateChristmasPrompt } from './promptGenerator'
+import { buildSongStyle, generateSongPrompt } from './promptGenerator'
 import type { ToCharacter, Sender } from './songSchema'
 
 /**
@@ -48,7 +48,7 @@ export async function generateSongForOrder(orderId: string): Promise<{
       console.error('Failed to fetch senders:', sendersError)
     }
 
-    // Transform database records to the format expected by generateChristmasPrompt
+    // Transform database records to the format expected by generateSongPrompt
     const toCharacters: ToCharacter[] = (toCharactersData || []).map(char => ({
       characterName: char.character_name,
       characterGender: char.character_gender as 'male' | 'female' | 'other' | undefined,
@@ -103,7 +103,7 @@ export async function generateSongForOrder(orderId: string): Promise<{
 
     // Use user-provided lyrics if available, otherwise generate prompt
     const lyricsInput = order.lyrics_input?.trim()
-    const prompt = lyricsInput || generateChristmasPrompt({
+    const prompt = lyricsInput || generateSongPrompt({
       toCharacters,
       senders,
       songStyle: order.song_style,
@@ -112,13 +112,13 @@ export async function generateSongForOrder(orderId: string): Promise<{
       instruments: instrumentsArray || undefined,
       vocalGender: order.vocal_gender || undefined,
     })
-    
+
     console.log(`[GENERATE SONG] Prompt source: ${lyricsInput ? 'user-provided lyrics_input' : 'generated prompt'}`)
     console.log(`[GENERATE SONG] Prompt length: ${prompt.length} characters`)
     console.log(`[GENERATE SONG] Prompt preview: ${prompt.substring(0, 100)}...`)
 
-    // Build rich style description combining Christmas elements with user preferences
-    const style = buildChristmasStyle({
+    // Build rich style description combining user preferences
+    const style = buildSongStyle({
       songStyle: order.song_style,
       songMood: order.song_mood || undefined,
       tempo: order.tempo || undefined,

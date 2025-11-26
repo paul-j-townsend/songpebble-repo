@@ -4,7 +4,7 @@ import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { songFormSchema, type SongFormData } from '@/lib/songSchema'
 import { useState } from 'react'
-import { generateChristmasPrompt } from '@/lib/promptGenerator'
+import { generateSongPrompt } from '@/lib/promptGenerator'
 
 const SONG_STYLES = [
   'Pop',
@@ -58,9 +58,9 @@ export default function SongForm() {
   } = useForm<SongFormData>({
     resolver: zodResolver(songFormSchema),
     defaultValues: {
-      customerEmail: 'santa@northpole.com',
-      customerName: 'Buddy Elf',
-      songTitle: 'Santa\'s Rockin\' Sleigh Ride',
+      customerEmail: 'user@example.com',
+      customerName: 'John Doe',
+      songTitle: 'My Custom Song',
       songStyle: 'Pop',
       songMood: 'Playful',
       vocalGender: 'female',
@@ -68,10 +68,10 @@ export default function SongForm() {
       instruments: ['piano', 'drums'],
       toCharacters: [
         {
-          characterName: 'Andy',
-          characterGender: 'male' as const,
-          characterInterests: 'Building snowmen, drinking hot cocoa, and waiting for Santa',
-          characterMention: 'Believes in Santa with all his heart and writes letters to the North Pole',
+          characterName: 'Sarah',
+          characterGender: 'female' as const,
+          characterInterests: 'Reading, hiking, and playing guitar',
+          characterMention: 'Always smiles when listening to music',
         },
       ],
       senders: [],
@@ -185,9 +185,9 @@ export default function SongForm() {
     setValue('lyricsInput', '')
   }
 
-  // Test prompt creation - generates Christmas prompt from current form data
+  // Test prompt creation - generates prompt from current form data
   const testPromptCreation = () => {
-    const generatedPrompt = generateChristmasPrompt({
+    const generatedPrompt = generateSongPrompt({
       toCharacters: formValues.toCharacters || [],
       senders: formValues.senders || [],
       songStyle: formValues.songStyle,
@@ -227,81 +227,81 @@ export default function SongForm() {
   // Load default test values
   const loadDefaultValues = () => {
     reset({
-      customerEmail: 'santa@northpole.com',
-      customerName: 'Buddy Elf',
-      songTitle: 'Santa\'s Rockin\' Sleigh Ride',
+      customerEmail: 'test@example.com',
+      customerName: 'Jane Smith',
+      songTitle: 'A Song for You',
       songStyle: 'Pop',
-      songMood: 'Playful',
+      songMood: 'Uplifting',
       vocalGender: 'female',
-      tempo: 'fast',
-      instruments: ['piano', 'drums'],
+      tempo: 'medium',
+      instruments: ['guitar', 'piano'],
       toCharacters: [
         {
-          characterName: 'Paul',
+          characterName: 'Alex',
           characterGender: 'male' as const,
-          characterInterests: 'Building snowmen, drinking hot cocoa, and waiting for Santa',
-          characterMention: 'Believes in Santa with all his heart and writes letters to the North Pole',
+          characterInterests: 'Playing sports, reading books, and spending time outdoors',
+          characterMention: 'Always encourages others to follow their dreams',
         },
       ],
       senders: [
         {
-          senderName: 'Paul',
+          senderName: 'Family',
         },
       ],
       lyricsInput: `[Intro]
-Ho ho ho! Can you hear those jingle bells ring?
-Santa's loading up the sleigh, hear the reindeer sing!
+This is a special song, just for you
+With every word and melody so true
 
 [Verse 1]
-Reindeer ready on the roof, Rudolph's nose is bright,
-Eight tiny hooves are dancing in the starlight.
-Chimney after chimney, sliding down with cheer,
-Leaving presents for the ones we hold so dear!
+Through all the days and through all the nights,
+You've been there shining like a guiding light.
+Every moment shared, every memory made,
+In this song, our gratitude is conveyed.
 
 [Pre-Chorus]
-The workshop's been buzzing, elves worked through the night,
-Now it's time to spread the joy and Christmas light!
+So here's to you, for all you do,
+This song is written just for you!
 
 [Chorus]
-Santa's rockin' on his sleigh ride tonight,
-Zooming through the sky with presents shining bright!
-Jingle bells are ringing loud across the winter sky,
-It's Christmas magic, watch Santa fly by!
+You're the one who makes life bright,
+Turning ordinary days to something right!
+With every smile and every word you say,
+You make the world a better place each day!
 
 [Verse 2]
-Cookies and some milk at every single door,
-Santa's belly's getting full, but he wants more!
-Mrs. Claus is waving from the North Pole way up high,
-"Faster Santa, faster! You've got kids to satisfy!"
+From sunrise mornings to the starry nights,
+Your presence brings such joy and light.
+The laughter shared, the stories told,
+Are moments worth more than gold!
 
 [Pre-Chorus]
-The nice list's checked twice, everyone gets love tonight,
-Because Christmas is the season when we all shine bright!
+So here's to you, for all you do,
+This song is written just for you!
 
 [Chorus]
-Santa's rockin' on his sleigh ride tonight,
-Zooming through the sky with presents shining bright!
-Jingle bells are ringing loud across the winter sky,
-It's Christmas magic, watch Santa fly by!
+You're the one who makes life bright,
+Turning ordinary days to something right!
+With every smile and every word you say,
+You make the world a better place each day!
 
 [Bridge]
-From Tokyo to Paris, Cairo to LA,
-Every child is dreaming on this special day!
-Snowflakes falling gently as the sleigh bells chime,
-It's the greatest, merriest, most magical time!
+Through ups and downs, through thick and thin,
+Your spirit always helps us win!
+This melody's our gift to show,
+How much we love you so!
 
 [Final Chorus]
-Santa's rockin' on his sleigh ride tonight,
-Spreading joy and wonder, making spirits bright!
-Jingle bells are ringing out for you and me,
-Merry Christmas everyone, under every tree!
+You're the one who makes life bright,
+Turning ordinary days to something right!
+With every smile and every word you say,
+You make the world a better place each day!
 
 [Outro]
-The mission's done, the world's asleep and tight,
-Merry Christmas to all, and to all a good night!`,
+This song is yours, from me to you,
+A celebration of all that you do!`,
     })
-    // Expand the 2 test to characters
-    setExpandedToCharacters(new Set([0, 1]))
+    // Expand the test recipient
+    setExpandedToCharacters(new Set([0]))
   }
 
   const onSubmit = async (data: SongFormData) => {
@@ -347,7 +347,7 @@ Merry Christmas to all, and to all a good night!`,
           id="customerEmail"
           type="email"
           {...register('customerEmail')}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-christmas-gold focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="your@email.com"
         />
         {errors.customerEmail && (
@@ -364,7 +364,7 @@ Merry Christmas to all, and to all a good night!`,
           id="customerName"
           type="text"
           {...register('customerName')}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-christmas-gold focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="John Doe"
         />
         {errors.customerName && (
@@ -381,7 +381,7 @@ Merry Christmas to all, and to all a good night!`,
           id="songTitle"
           type="text"
           {...register('songTitle')}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-christmas-gold focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="My Custom Song"
         />
         {errors.songTitle && (
@@ -397,7 +397,7 @@ Merry Christmas to all, and to all a good night!`,
         <select
           id="songStyle"
           {...register('songStyle')}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-christmas-gold focus:border-transparent bg-white"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
         >
           <option value="">Select a style...</option>
           {SONG_STYLES.map((style) => (
@@ -419,7 +419,7 @@ Merry Christmas to all, and to all a good night!`,
         <select
           id="songMood"
           {...register('songMood')}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-christmas-gold focus:border-transparent bg-white"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
         >
           <option value="">Select a mood...</option>
           {SONG_MOODS.map((mood) => (
@@ -441,7 +441,7 @@ Merry Christmas to all, and to all a good night!`,
         <select
           id="vocalGender"
           {...register('vocalGender')}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-christmas-gold focus:border-transparent bg-white"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
         >
           <option value="">Select vocal type...</option>
           <option value="male">Male Vocals</option>
@@ -460,7 +460,7 @@ Merry Christmas to all, and to all a good night!`,
         <select
           id="tempo"
           {...register('tempo')}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-christmas-gold focus:border-transparent bg-white"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
         >
           <option value="">Select tempo...</option>
           <option value="slow">Slow (60-80 BPM)</option>
@@ -484,7 +484,7 @@ Merry Christmas to all, and to all a good night!`,
               type="checkbox"
               value="guitar"
               {...register('instruments')}
-              className="rounded border-gray-300 text-christmas-red focus:ring-christmas-gold"
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm text-gray-700">Guitar</span>
           </label>
@@ -493,7 +493,7 @@ Merry Christmas to all, and to all a good night!`,
               type="checkbox"
               value="piano"
               {...register('instruments')}
-              className="rounded border-gray-300 text-christmas-red focus:ring-christmas-gold"
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm text-gray-700">Piano</span>
           </label>
@@ -502,7 +502,7 @@ Merry Christmas to all, and to all a good night!`,
               type="checkbox"
               value="synth"
               {...register('instruments')}
-              className="rounded border-gray-300 text-christmas-red focus:ring-christmas-gold"
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm text-gray-700">Synth</span>
           </label>
@@ -511,7 +511,7 @@ Merry Christmas to all, and to all a good night!`,
               type="checkbox"
               value="drums"
               {...register('instruments')}
-              className="rounded border-gray-300 text-christmas-red focus:ring-christmas-gold"
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm text-gray-700">Drums</span>
           </label>
@@ -520,7 +520,7 @@ Merry Christmas to all, and to all a good night!`,
               type="checkbox"
               value="strings"
               {...register('instruments')}
-              className="rounded border-gray-300 text-christmas-red focus:ring-christmas-gold"
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm text-gray-700">Strings</span>
           </label>
@@ -529,7 +529,7 @@ Merry Christmas to all, and to all a good night!`,
               type="checkbox"
               value="brass"
               {...register('instruments')}
-              className="rounded border-gray-300 text-christmas-red focus:ring-christmas-gold"
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm text-gray-700">Brass</span>
           </label>
@@ -538,7 +538,7 @@ Merry Christmas to all, and to all a good night!`,
               type="checkbox"
               value="bass"
               {...register('instruments')}
-              className="rounded border-gray-300 text-christmas-red focus:ring-christmas-gold"
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm text-gray-700">Bass</span>
           </label>
@@ -547,7 +547,7 @@ Merry Christmas to all, and to all a good night!`,
               type="checkbox"
               value="electronic"
               {...register('instruments')}
-              className="rounded border-gray-300 text-christmas-red focus:ring-christmas-gold"
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm text-gray-700">Electronic</span>
           </label>
@@ -556,7 +556,7 @@ Merry Christmas to all, and to all a good night!`,
               type="checkbox"
               value="orchestral"
               {...register('instruments')}
-              className="rounded border-gray-300 text-christmas-red focus:ring-christmas-gold"
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm text-gray-700">Orchestral</span>
           </label>
@@ -598,7 +598,7 @@ Merry Christmas to all, and to all a good night!`,
                 })
               }}
               disabled={toCharacterFields.length >= 8}
-              className="flex items-center gap-2 px-4 py-2 bg-christmas-red text-white text-sm font-medium rounded-lg hover:bg-christmas-red-dark hover:scale-105 focus:outline-none focus:ring-2 focus:ring-christmas-gold focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-600-dark hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -687,7 +687,7 @@ Merry Christmas to all, and to all a good night!`,
                     id={`toCharacters.${index}.characterName`}
                     type="text"
                     {...register(`toCharacters.${index}.characterName` as const)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-christmas-gold focus:border-transparent text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                     placeholder="e.g., Sarah, John, etc."
                   />
                   {errors.toCharacters?.[index]?.characterName && (
@@ -703,7 +703,7 @@ Merry Christmas to all, and to all a good night!`,
                   <select
                     id={`toCharacters.${index}.characterGender`}
                     {...register(`toCharacters.${index}.characterGender` as const)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-christmas-gold focus:border-transparent bg-white text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-sm"
                   >
                     <option value="">Select gender...</option>
                     <option value="male">Male</option>
@@ -724,7 +724,7 @@ Merry Christmas to all, and to all a good night!`,
                     id={`toCharacters.${index}.characterInterests`}
                     {...register(`toCharacters.${index}.characterInterests` as const)}
                     rows={2}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-christmas-gold focus:border-transparent resize-y text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y text-sm"
                     placeholder="e.g., loves hiking, plays guitar, enjoys cooking..."
                   />
                   {errors.toCharacters?.[index]?.characterInterests && (
@@ -741,7 +741,7 @@ Merry Christmas to all, and to all a good night!`,
                     id={`toCharacters.${index}.characterMention`}
                     {...register(`toCharacters.${index}.characterMention` as const)}
                     rows={2}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-christmas-gold focus:border-transparent resize-y text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y text-sm"
                     placeholder="e.g., always smiles when it rains, has a unique laugh..."
                   />
                   {errors.toCharacters?.[index]?.characterMention && (
@@ -771,7 +771,7 @@ Merry Christmas to all, and to all a good night!`,
             type="text"
             value={senderName}
             onChange={(e) => handleSenderNameChange(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-christmas-gold focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="e.g., Mom and Dad, Grandma, etc."
           />
           {errors.senders?.[0]?.senderName && (
@@ -828,7 +828,7 @@ Merry Christmas to all, and to all a good night!`,
                 <button
                   type="button"
                   onClick={copyStylePrompt}
-                  className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-christmas-red hover:text-christmas-red-dark hover:bg-christmas-snow rounded transition-colors"
+                  className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 hover:text-blue-600-dark hover:bg-gray-50 rounded transition-colors"
                 >
                   {copiedStyle ? (
                     <>
@@ -862,7 +862,7 @@ Merry Christmas to all, and to all a good night!`,
                   <button
                     type="button"
                     onClick={copyLyrics}
-                    className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-christmas-red hover:text-christmas-red-dark hover:bg-christmas-snow rounded transition-colors"
+                    className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 hover:text-blue-600-dark hover:bg-gray-50 rounded transition-colors"
                   >
                     {copiedLyrics ? (
                       <>
@@ -890,7 +890,7 @@ Merry Christmas to all, and to all a good night!`,
               </div>
             )}
 
-            <div className="text-xs text-gray-600 bg-christmas-snow border border-christmas-gold-light p-3 rounded">
+            <div className="text-xs text-gray-600 bg-gray-50 border border-gray-200 p-3 rounded">
               <strong>Note:</strong> This is a preview of what will be sent to Suno AI for song generation. The style prompt describes the musical characteristics, while your lyrics/theme provides the content.
             </div>
           </div>
@@ -909,7 +909,7 @@ Merry Christmas to all, and to all a good night!`,
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-christmas-red text-white py-3 px-6 rounded-lg font-medium hover:bg-christmas-red-dark hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-christmas-gold focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+          className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-600-dark hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
         >
           {isSubmitting ? 'Processing...' : 'Create My Song - £20'}
         </button>
@@ -950,7 +950,7 @@ Merry Christmas to all, and to all a good night!`,
           <button
             type="button"
             onClick={loadDefaultValues}
-            className="flex items-center justify-center gap-2 bg-white text-christmas-green py-2 px-4 rounded-lg font-medium border border-christmas-green-light hover:bg-christmas-snow hover:scale-105 focus:outline-none focus:ring-2 focus:ring-christmas-gold focus:ring-offset-2 transition-all duration-200"
+            className="flex items-center justify-center gap-2 bg-white text-gray-700 py-2 px-4 rounded-lg font-medium border border-gray-300 hover:bg-gray-50 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />

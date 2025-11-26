@@ -7,9 +7,9 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
   if (!orderId) {
     return (
       <div className="text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-christmas-red bg-opacity-20 mb-6">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-6">
           <svg
-            className="w-8 h-8 text-christmas-red"
+            className="w-8 h-8 text-red-600"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -27,13 +27,13 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
           Order Not Found
         </h1>
 
-        <p className="text-lg text-christmas-red-dark mb-8">
+        <p className="text-lg text-gray-700 mb-8">
           We couldn&apos;t find your order. Please check the URL or try submitting the form again.
         </p>
 
         <Link
           href="/"
-          className="inline-block bg-christmas-red text-white px-6 py-3 rounded-lg font-medium hover:bg-christmas-red-dark transition-colors"
+          className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
         >
           Return to Home
         </Link>
@@ -43,9 +43,9 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
 
   return (
     <div className="text-center">
-      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-christmas-green bg-opacity-20 mb-6">
+      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-6">
         <svg
-          className="w-8 h-8 text-christmas-green"
+          className="w-8 h-8 text-green-600"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -60,28 +60,28 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
       </div>
 
       <h1 className="text-3xl font-bold text-gray-900 mb-4">
-        🎄 Thank You for Your Order! 🎅
+        Thank You for Your Order!
       </h1>
 
-      <p className="text-lg text-christmas-green-dark mb-2">
-        Your payment has been successfully processed. Your Christmas song is on its way!
+      <p className="text-lg text-gray-700 mb-2">
+        Your payment has been successfully processed. Your custom song is on its way!
       </p>
 
-      <div className="bg-christmas-snow border border-christmas-gold rounded-lg p-6 mb-8 max-w-md mx-auto">
-        <p className="text-sm font-medium text-christmas-red-dark mb-1">
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8 max-w-md mx-auto">
+        <p className="text-sm font-medium text-gray-700 mb-1">
           Order ID
         </p>
-        <p className="text-xs text-christmas-red font-mono break-all">
+        <p className="text-xs text-gray-600 font-mono break-all">
           {orderId}
         </p>
       </div>
 
-      <div className="space-y-4 text-left max-w-md mx-auto bg-christmas-snow border border-christmas-gold-light p-6 rounded-lg mb-8">
+      <div className="space-y-4 text-left max-w-md mx-auto bg-gray-50 border border-gray-200 p-6 rounded-lg mb-8">
         <h2 className="font-semibold text-gray-900">What happens next?</h2>
 
         <ol className="space-y-3 text-sm text-gray-600">
           <li className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-christmas-snow text-christmas-red flex items-center justify-center text-xs font-medium">
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-medium">
               1
             </span>
             <span>
@@ -90,7 +90,7 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
           </li>
 
           <li className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-christmas-snow text-christmas-red flex items-center justify-center text-xs font-medium">
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-medium">
               2
             </span>
             <span>
@@ -99,7 +99,7 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
           </li>
 
           <li className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-christmas-snow text-christmas-red flex items-center justify-center text-xs font-medium">
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-medium">
               3
             </span>
             <span>
@@ -115,7 +115,7 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
 
       <Link
         href="/"
-        className="inline-block bg-christmas-red text-white px-6 py-3 rounded-lg font-medium hover:bg-christmas-red-dark transition-colors"
+        className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
       >
         Return to Home
       </Link>
@@ -129,13 +129,13 @@ export default function ThankYouPage({
   searchParams: { order_id?: string }
 }) {
   return (
-    <main className="min-h-screen bg-christmas-snow flex items-center justify-center">
+    <main className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="max-w-2xl mx-auto px-4 py-12">
         <Suspense
           fallback={
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-christmas-red mx-auto"></div>
-              <p className="mt-4 text-christmas-red-dark">Loading...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-700">Loading...</p>
             </div>
           }
         >

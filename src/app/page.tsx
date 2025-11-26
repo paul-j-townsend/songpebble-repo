@@ -1,12 +1,10 @@
 import Image from "next/image";
 import SongForm from "@/components/SongForm";
-import Snowfall from "@/components/Snowfall";
 import TestApiButton from "@/components/TestApiButton";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-christmas-snow relative">
-      <Snowfall />
+    <main className="min-h-screen bg-gray-50 relative">
       <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-10 relative z-10">
         <header className="flex flex-col gap-4">
           <div className="flex items-center gap-4">
@@ -18,14 +16,11 @@ export default function HomePage() {
               priority
               className="h-[4.8rem] w-auto"
             />
-            <div className="text-4xl animate-sparkle text-christmas-gold">✨</div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">🎄</span>
-            <p className="text-sm text-christmas-red-dark">
-              Tell us your story and we&apos;ll turn it into a custom Christmas song! Ho ho ho!
+          <div>
+            <p className="text-sm text-gray-700">
+              Tell us your story and we&apos;ll turn it into a custom song!
             </p>
-            <span className="text-2xl">🎅</span>
           </div>
         </header>
 

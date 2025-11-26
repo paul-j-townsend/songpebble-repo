@@ -18,10 +18,10 @@ function formatNameList(names: string[]): string {
 }
 
 /**
- * Builds a rich style description combining Christmas elements with user preferences
+ * Builds a rich style description combining user preferences
  * Used for the API.box 'style' parameter
  */
-export function buildChristmasStyle(params: {
+export function buildSongStyle(params: {
   songStyle?: string
   songMood?: string
   tempo?: string
@@ -30,12 +30,10 @@ export function buildChristmasStyle(params: {
 }): string {
   const parts: string[] = []
 
-  // Base style: Christmas + user's genre
+  // Base style: user's genre
   const userStyle = params.songStyle || 'pop'
   // Normalize the style to lowercase for further checks
   const styleLower = userStyle.toLowerCase()
-  // Always start with "Christmas <style>"
-  parts.push(`Christmas`)
   parts.push(`${styleLower}`)
 
   // Special case: for hip hop, also add "rap" to highlight vocal style
@@ -75,9 +73,6 @@ export function buildChristmasStyle(params: {
     }
   }
 
-  // Add Christmas sonic elements
-  parts.push('soft bells', 'warm synths', 'light chimes', 'airy pads')
-
   // Add user's selected instruments
   if (params.instruments && params.instruments.length > 0) {
     parts.push(...params.instruments)
@@ -87,10 +82,10 @@ export function buildChristmasStyle(params: {
 }
 
 /**
- * Generates a Christmas song prompt from character and sender data
+ * Generates a song prompt from character and sender data
  * using a structured template with conditional phrases.
  */
-export function generateChristmasPrompt(params: {
+export function generateSongPrompt(params: {
   toCharacters: ToCharacter[]
   senders: Sender[]
   songStyle?: string
@@ -108,7 +103,7 @@ export function generateChristmasPrompt(params: {
 
   const safeSenders = senders.length > 0
     ? senders
-    : [{ senderName: 'Santa' }]
+    : [{ senderName: 'Your Friends' }]
 
   // Extract all character names for intro/outro with proper grammar
   const characterNames = safeToCharacters.map(char => char.characterName)
@@ -119,7 +114,7 @@ export function generateChristmasPrompt(params: {
   const recipientNames = formatNameList(senderNames)
 
   // Build style tags
-  const styleTags = buildChristmasStyle({ songStyle, songMood, tempo, instruments, vocalGender })
+  const styleTags = buildSongStyle({ songStyle, songMood, tempo, instruments, vocalGender })
 
   // Build verses for each character
   const verses = safeToCharacters.map(char => {
@@ -146,7 +141,7 @@ export function generateChristmasPrompt(params: {
     // Build the verse, removing extra spaces
     const verseLine2 = `${genderPhrase} ${interestPhrase}${mentionPhrase}`.trim()
 
-    return `[VERSE - soft bells]
+    return `[VERSE]
 ${char.characterName} brings a steady warmth,
 ${verseLine2}`
   }).join('\n\n')
@@ -154,20 +149,19 @@ ${verseLine2}`
   // Assemble the full prompt
   const prompt = `Tags: ${styleTags}
 
-[INTRO – soft bells, warm synths]
-Merry Christmas to ${allCharacterNames}
+[INTRO]
+This song is for ${allCharacterNames}
 
 ${verses}
 
-[CHORUS – soft bells, warm synths]
-Raise your voices, let the season glow.
-Feel the warmth while the cold winds blow.
+[CHORUS]
+Celebrate the moments that we share,
+Every smile and every bit of care.
 
 
-[OUTRO – soft bells fading]
-Merry Christmas to ${allCharacterNames}
-With love from ${recipientNames} as twenty twenty five comes to a close.
-Here's to twenty twenty six.`
+[OUTRO]
+This song is dedicated to ${allCharacterNames}
+With love from ${recipientNames}.`
 
   return prompt
 }
