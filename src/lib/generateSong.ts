@@ -101,15 +101,21 @@ export async function generateSongForOrder(orderId: string): Promise<{
       }
     }
 
-    // Build Christmas song prompt using the structured template
-    const prompt = generateChristmasPrompt({
+    // Use user-provided lyrics if available, otherwise generate prompt
+    const lyricsInput = order.lyrics_input?.trim()
+    const prompt = lyricsInput || generateChristmasPrompt({
       toCharacters,
       senders,
       songStyle: order.song_style,
       songMood: order.song_mood || undefined,
       tempo: order.tempo || undefined,
       instruments: instrumentsArray || undefined,
+      vocalGender: order.vocal_gender || undefined,
     })
+    
+    console.log(`[GENERATE SONG] Prompt source: ${lyricsInput ? 'user-provided lyrics_input' : 'generated prompt'}`)
+    console.log(`[GENERATE SONG] Prompt length: ${prompt.length} characters`)
+    console.log(`[GENERATE SONG] Prompt preview: ${prompt.substring(0, 100)}...`)
 
     // Build rich style description combining Christmas elements with user preferences
     const style = buildChristmasStyle({
@@ -117,13 +123,14 @@ export async function generateSongForOrder(orderId: string): Promise<{
       songMood: order.song_mood || undefined,
       tempo: order.tempo || undefined,
       instruments: instrumentsArray || undefined,
+      vocalGender: order.vocal_gender || undefined,
     })
 
     // Prepare API.box request payload
     const payload = {
       customMode: true,
       instrumental: order.vocal_gender === 'instrumental',
-      model: 'V4_5', // Using V4_5 for good balance of quality and speed
+      model: 'V5', // Using V5 for cutting-edge quality and enhanced capabilities
       callBackUrl,
       prompt,
       style,

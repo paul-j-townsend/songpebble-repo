@@ -23,7 +23,7 @@ console.log('')
 const testPayload = {
   customMode: true,
   instrumental: false, // We want vocals since we're providing lyrics
-  model: 'V4_5', // Using V4_5 for good balance of quality and speed
+  model: 'V5', // Using V5 for cutting-edge quality and enhanced capabilities
   callBackUrl: 'https://example.com/webhook', // Placeholder - replace with your actual webhook URL
   prompt: 'A joyful indie pop song about friendship and celebration',
   style: 'Indie Pop',

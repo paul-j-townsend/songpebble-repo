@@ -58,8 +58,20 @@ export const songFormSchema = z.object({
 
   lyricsInput: z
     .string()
-    .min(10, 'Lyrics must be at least 10 characters')
-    .max(2000, 'Lyrics must be less than 2000 characters'),
+    .refine(
+      (val) => {
+        // Allow empty strings (will use generated prompt)
+        if (!val || val.trim().length === 0) return true
+        // If provided, must be at least 10 characters
+        return val.trim().length >= 10
+      },
+      { message: 'Lyrics must be at least 10 characters if provided' }
+    )
+    .refine(
+      (val) => !val || val.length <= 2000,
+      { message: 'Lyrics must be less than 2000 characters' }
+    )
+    .default(''),
 
   // To Characters (1-8 recipients with full details)
   toCharacters: z
