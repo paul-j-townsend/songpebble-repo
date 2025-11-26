@@ -32,6 +32,20 @@ const config: Config = {
           },
         },
       },
+      keyframes: {
+        snowfall: {
+          '0%': { transform: 'translateY(-10vh) translateX(0)' },
+          '100%': { transform: 'translateY(100vh) translateX(100px)' },
+        },
+        sparkle: {
+          '0%, 100%': { opacity: '0' },
+          '50%': { opacity: '1' },
+        },
+      },
+      animation: {
+        snowfall: 'snowfall linear infinite',
+        sparkle: 'sparkle 2s ease-in-out infinite',
+      },
     },
   },
   plugins: [],

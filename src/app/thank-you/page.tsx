@@ -60,11 +60,11 @@ function ThankYouContent({ searchParams }: { searchParams: { order_id?: string }
       </div>
 
       <h1 className="text-3xl font-bold text-gray-900 mb-4">
-        Thank You for Your Order!
+        🎄 Thank You for Your Order! 🎅
       </h1>
 
       <p className="text-lg text-gray-600 mb-2">
-        Your payment has been successfully processed.
+        Your payment has been successfully processed. Your Christmas song is on its way!
       </p>
 
       <div className="bg-christmas-snow border border-christmas-gold rounded-lg p-6 mb-8 max-w-md mx-auto">
