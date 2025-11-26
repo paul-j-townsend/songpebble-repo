@@ -42,7 +42,7 @@ const SONG_MOODS = [
 export default function SongForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [showPrompt, setShowPrompt] = useState(false)
+  const [showPrompt, setShowPrompt] = useState(true)
   const [copiedStyle, setCopiedStyle] = useState(false)
   const [copiedLyrics, setCopiedLyrics] = useState(false)
   const [expandedToCharacters, setExpandedToCharacters] = useState<Set<number>>(new Set())
@@ -968,78 +968,42 @@ Merry Christmas to all, and to all a good night!`,
         )}
       </div>
 
-      {/* Lyrics Input */}
-      <div>
-        <div className="flex items-center justify-between mb-1">
-          <label htmlFor="lyricsInput" className="block text-sm font-medium text-gray-700">
-            Lyrics or Theme <span className="text-red-500">*</span>
-          </label>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={testPromptCreation}
-              className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-              Test Prompt Creation
-            </button>
-            {formValues.lyricsInput && (
-              <button
-                type="button"
-                onClick={clearLyrics}
-                className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
-              >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-                Clear
-              </button>
-            )}
-          </div>
-        </div>
-        <textarea
-          id="lyricsInput"
-          {...register('lyricsInput')}
-          rows={8}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-christmas-gold focus:border-transparent resize-y"
-          placeholder="Enter your lyrics or describe what you want the song to be about..."
-        />
-        {errors.lyricsInput && (
-          <p className="mt-1 text-sm text-red-600">{errors.lyricsInput.message}</p>
-        )}
-        <div className="mt-2 text-sm text-gray-500 space-y-1">
-          <p>Minimum 10 characters, maximum 2000 characters</p>
-          <p className="text-xs">
-            <strong>Tip:</strong> Use metatags to structure your song: <code className="bg-gray-100 px-1 rounded">[Intro]</code>, <code className="bg-gray-100 px-1 rounded">[Verse]</code>, <code className="bg-gray-100 px-1 rounded">[Chorus]</code>, <code className="bg-gray-100 px-1 rounded">[Bridge]</code>, <code className="bg-gray-100 px-1 rounded">[Outro]</code>
-          </p>
-        </div>
-      </div>
-
       {/* Prompt Preview */}
       <div className="border-t border-gray-200 pt-6">
-        <button
-          type="button"
-          onClick={() => setShowPrompt(!showPrompt)}
-          className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 mb-3"
-        >
-          {showPrompt ? (
-            <>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-              Hide Suno AI Prompt
-            </>
-          ) : (
-            <>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-              Preview Suno AI Prompt
-            </>
-          )}
-        </button>
+        <div className="flex items-center justify-between mb-3">
+          <button
+            type="button"
+            onClick={() => setShowPrompt(!showPrompt)}
+            className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700"
+          >
+            {showPrompt ? (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+                Hide Suno AI Prompt
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+                Preview Suno AI Prompt
+              </>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={testPromptCreation}
+            className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            Generate Prompt
+          </button>
+        </div>
 
         {showPrompt && (
           <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-3">

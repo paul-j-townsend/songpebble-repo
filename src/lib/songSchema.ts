@@ -86,7 +86,7 @@ export const songFormSchema = z.object({
     .max(8, 'Maximum 8 recipients allowed')
     .default([]),
 
-  // Senders (1-8 senders with just names)
+  // Senders (0-1 sender with just name)
   senders: z
     .array(
       z.object({
@@ -96,8 +96,8 @@ export const songFormSchema = z.object({
           .max(100, 'Sender name must be less than 100 characters'),
       })
     )
-    .min(1, 'At least one sender is required')
-    .max(8, 'Maximum 8 senders allowed')
+    .min(0, 'Invalid senders')
+    .max(1, 'Maximum 1 sender allowed')
     .default([]),
 })
 
