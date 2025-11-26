@@ -61,7 +61,7 @@ export const songFormSchema = z.object({
     .min(10, 'Lyrics must be at least 10 characters')
     .max(2000, 'Lyrics must be less than 2000 characters'),
 
-  // To Characters (0-8 recipients with full details)
+  // To Characters (1-8 recipients with full details)
   toCharacters: z
     .array(
       z.object({
@@ -82,10 +82,11 @@ export const songFormSchema = z.object({
           .optional(),
       })
     )
+    .min(1, 'At least one recipient is required')
     .max(8, 'Maximum 8 recipients allowed')
     .default([]),
 
-  // Senders (0-8 senders with just names)
+  // Senders (1-8 senders with just names)
   senders: z
     .array(
       z.object({
@@ -95,6 +96,7 @@ export const songFormSchema = z.object({
           .max(100, 'Sender name must be less than 100 characters'),
       })
     )
+    .min(1, 'At least one sender is required')
     .max(8, 'Maximum 8 senders allowed')
     .default([]),
 })

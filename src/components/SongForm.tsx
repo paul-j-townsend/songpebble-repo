@@ -4,6 +4,7 @@ import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { songFormSchema, type SongFormData } from '@/lib/songSchema'
 import { useState } from 'react'
+import { generateChristmasPrompt } from '@/lib/promptGenerator'
 
 const SONG_STYLES = [
   'Pop',
@@ -66,8 +67,19 @@ export default function SongForm() {
       vocalGender: 'mixed',
       tempo: 'fast',
       instruments: ['brass', 'drums', 'piano', 'synth'],
-      toCharacters: [],
-      senders: [],
+      toCharacters: [
+        {
+          characterName: 'Andy',
+          characterGender: 'male' as const,
+          characterInterests: 'Building snowmen, drinking hot cocoa, and waiting for Santa',
+          characterMention: 'Believes in Santa with all his heart and writes letters to the North Pole',
+        },
+      ],
+      senders: [
+        {
+          senderName: 'Paul',
+        },
+      ],
       lyricsInput: `[Intro]
 Ho ho ho! Can you hear those jingle bells ring?
 Santa's loading up the sleigh, hear the reindeer sing!
@@ -232,7 +244,20 @@ Merry Christmas to all, and to all a good night!`,
     setValue('lyricsInput', '')
   }
 
-  // Clear all form fields
+  // Test prompt creation - generates Christmas prompt from current form data
+  const testPromptCreation = () => {
+    const generatedPrompt = generateChristmasPrompt({
+      toCharacters: formValues.toCharacters || [],
+      senders: formValues.senders || [],
+      songStyle: formValues.songStyle,
+      songMood: formValues.songMood,
+      tempo: formValues.tempo,
+      instruments: formValues.instruments,
+    })
+    setValue('lyricsInput', generatedPrompt)
+  }
+
+  // Clear all form fields (maintains minimum 1 recipient and 1 sender)
   const clearAllFields = () => {
     reset({
       customerEmail: '',
@@ -243,12 +268,23 @@ Merry Christmas to all, and to all a good night!`,
       vocalGender: '',
       tempo: '',
       instruments: [],
-      toCharacters: [],
-      senders: [],
+      toCharacters: [
+        {
+          characterName: '',
+          characterGender: undefined,
+          characterInterests: '',
+          characterMention: '',
+        },
+      ],
+      senders: [
+        {
+          senderName: '',
+        },
+      ],
       lyricsInput: '',
     })
-    setExpandedToCharacters(new Set())
-    setExpandedSenders(new Set())
+    setExpandedToCharacters(new Set([0]))
+    setExpandedSenders(new Set([0]))
   }
 
   // Load default test values
@@ -264,25 +300,17 @@ Merry Christmas to all, and to all a good night!`,
       instruments: ['brass', 'drums', 'piano', 'synth'],
       toCharacters: [
         {
-          characterName: 'Little Timmy',
+          characterName: 'Paul',
           characterGender: 'male' as const,
           characterInterests: 'Building snowmen, drinking hot cocoa, and waiting for Santa',
           characterMention: 'Believes in Santa with all his heart and writes letters to the North Pole',
         },
-        {
-          characterName: 'Holly',
-          characterGender: 'female' as const,
-          characterInterests: 'Decorating the Christmas tree, baking cookies, and singing carols',
-          characterMention: 'Her smile lights up the room like Christmas lights',
-        },
       ],
       senders: [
         {
-          senderName: 'Mom and Dad',
+          senderName: 'Paul',
         },
-        {
-          senderName: 'Grandma',
-        },
+
       ],
       lyricsInput: `[Intro]
 Ho ho ho! Can you hear those jingle bells ring?
@@ -946,18 +974,30 @@ Merry Christmas to all, and to all a good night!`,
           <label htmlFor="lyricsInput" className="block text-sm font-medium text-gray-700">
             Lyrics or Theme <span className="text-red-500">*</span>
           </label>
-          {formValues.lyricsInput && (
+          <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={clearLyrics}
-              className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
+              onClick={testPromptCreation}
+              className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
             >
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
               </svg>
-              Clear
+              Test Prompt Creation
             </button>
-          )}
+            {formValues.lyricsInput && (
+              <button
+                type="button"
+                onClick={clearLyrics}
+                className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Clear
+              </button>
+            )}
+          </div>
         </div>
         <textarea
           id="lyricsInput"

@@ -1,8 +1,10 @@
 import { supabaseAdmin } from './supabaseAdmin'
+import { buildChristmasStyle, generateChristmasPrompt } from './promptGenerator'
+import type { ToCharacter, Sender } from './songSchema'
 
 /**
  * Generates a song using API.box for a given order
- * 
+ *
  * @param orderId - The order ID to generate a song for
  * @returns Success status and taskId if successful
  */
@@ -25,6 +27,38 @@ export async function generateSongForOrder(orderId: string): Promise<{
         error: `Order not found: ${orderError?.message || 'Unknown error'}`,
       }
     }
+
+    // Fetch toCharacters (recipients) for this order
+    const { data: toCharactersData, error: toCharactersError } = await supabaseAdmin
+      .from('to_characters')
+      .select('*')
+      .eq('order_id', orderId)
+
+    if (toCharactersError) {
+      console.error('Failed to fetch to_characters:', toCharactersError)
+    }
+
+    // Fetch senders for this order
+    const { data: sendersData, error: sendersError } = await supabaseAdmin
+      .from('senders')
+      .select('*')
+      .eq('order_id', orderId)
+
+    if (sendersError) {
+      console.error('Failed to fetch senders:', sendersError)
+    }
+
+    // Transform database records to the format expected by generateChristmasPrompt
+    const toCharacters: ToCharacter[] = (toCharactersData || []).map(char => ({
+      characterName: char.character_name,
+      characterGender: char.character_gender as 'male' | 'female' | 'other' | undefined,
+      characterInterests: char.character_interests || undefined,
+      characterMention: char.character_mention || undefined,
+    }))
+
+    const senders: Sender[] = (sendersData || []).map(sender => ({
+      senderName: sender.sender_name,
+    }))
 
     // Check if order is paid
     if (order.status !== 'paid') {
@@ -67,15 +101,22 @@ export async function generateSongForOrder(orderId: string): Promise<{
       }
     }
 
-    // Build prompt from order details
-    const prompt = buildPromptFromOrder({
-      song_title: order.song_title,
-      song_style: order.song_style,
-      song_mood: order.song_mood,
-      lyrics_input: order.lyrics_input,
-      vocal_gender: order.vocal_gender,
-      tempo: order.tempo,
-      instruments: instrumentsArray,
+    // Build Christmas song prompt using the structured template
+    const prompt = generateChristmasPrompt({
+      toCharacters,
+      senders,
+      songStyle: order.song_style,
+      songMood: order.song_mood || undefined,
+      tempo: order.tempo || undefined,
+      instruments: instrumentsArray || undefined,
+    })
+
+    // Build rich style description combining Christmas elements with user preferences
+    const style = buildChristmasStyle({
+      songStyle: order.song_style,
+      songMood: order.song_mood || undefined,
+      tempo: order.tempo || undefined,
+      instruments: instrumentsArray || undefined,
     })
 
     // Prepare API.box request payload
@@ -85,7 +126,7 @@ export async function generateSongForOrder(orderId: string): Promise<{
       model: 'V4_5', // Using V4_5 for good balance of quality and speed
       callBackUrl,
       prompt,
-      style: order.song_style,
+      style,
       title: order.song_title,
     }
 
@@ -141,48 +182,3 @@ export async function generateSongForOrder(orderId: string): Promise<{
     }
   }
 }
-
-/**
- * Builds a prompt for API.box from order details
- */
-function buildPromptFromOrder(order: {
-  song_title: string
-  song_style: string
-  song_mood: string | null
-  lyrics_input: string
-  vocal_gender: string | null
-  tempo: string | null
-  instruments: string[] | null
-}): string {
-  let prompt = order.lyrics_input
-
-  // Add style and mood context
-  if (order.song_style) {
-    prompt = `${order.song_style} style. ${prompt}`
-  }
-
-  if (order.song_mood) {
-    prompt = `${prompt} Mood: ${order.song_mood}.`
-  }
-
-  // Add tempo if specified
-  if (order.tempo) {
-    const tempoMap: Record<string, string> = {
-      slow: 'slow tempo',
-      medium: 'medium tempo',
-      fast: 'fast tempo',
-      'very-fast': 'very fast tempo',
-    }
-    if (tempoMap[order.tempo]) {
-      prompt = `${prompt} ${tempoMap[order.tempo]}.`
-    }
-  }
-
-  // Add instruments if specified
-  if (order.instruments && order.instruments.length > 0) {
-    prompt = `${prompt} Instruments: ${order.instruments.join(', ')}.`
-  }
-
-  return prompt
-}
-
