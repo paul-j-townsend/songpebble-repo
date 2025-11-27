@@ -5,6 +5,14 @@ import { formatNameList } from './safeMode/types'
 import { validateLyrics } from './validateLyrics'
 import { getFromCache, saveToCache, generateCacheKey } from './lyricsCache'
 
+const DEFAULT_CLAUDE_MODEL = 'claude-3-5-sonnet-20241022'
+const CLAUDE_MODEL_FALLBACKS = [
+  DEFAULT_CLAUDE_MODEL,
+  'claude-3-5-haiku-20241022',
+  'claude-3-sonnet-20240229',
+  'claude-3-opus-20240229',
+]
+
 /**
  * Result from Claude API lyrics generation
  */
@@ -181,6 +189,7 @@ function buildUserMessage(
 async function callClaudeAPI(
   systemPrompt: string,
   userMessage: string,
+  model: string,
   attempt: number = 1
 ): Promise<string> {
   const anthropic = getAnthropicClient()
@@ -189,7 +198,7 @@ async function callClaudeAPI(
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
+      model,
       max_tokens: 2500,
       temperature: 0.7,
       system: systemPrompt,
@@ -209,14 +218,27 @@ async function callClaudeAPI(
       throw new Error('No text content in Claude response')
     }
 
-    console.log(`✅ Claude API success (attempt ${attempt}, ${responseTime}ms, ${response.usage.input_tokens} in / ${response.usage.output_tokens} out)`)
+    console.log(`✅ Claude API success (attempt ${attempt}, model: ${model}, ${responseTime}ms, ${response.usage.input_tokens} in / ${response.usage.output_tokens} out)`)
 
     return textContent.text
   } catch (error) {
     const responseTime = Date.now() - startTime
-    console.error(`❌ Claude API error (attempt ${attempt}, ${responseTime}ms):`, error)
+    console.error(`❌ Claude API error (attempt ${attempt}, model: ${model}, ${responseTime}ms):`, error)
     throw error
   }
+}
+
+function getModelCandidates(): string[] {
+  const envModel = process.env.ANTHROPIC_MODEL
+  const models = envModel ? [envModel, ...CLAUDE_MODEL_FALLBACKS] : CLAUDE_MODEL_FALLBACKS
+  // Remove duplicates while preserving order
+  return Array.from(new Set(models))
+}
+
+function isNotFoundError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false
+  const err = error as { error?: { type?: string } }
+  return err?.error?.type === 'not_found_error'
 }
 
 /**
@@ -261,61 +283,22 @@ export async function generateLyricsWithClaude(
   const systemPrompt = buildSystemPrompt()
   const userMessage = buildUserMessage(occasion, tone, toCharacters, senders, songTitle)
 
-  // Attempt 1: Immediate call
-  try {
-    const lyrics = await callClaudeAPI(systemPrompt, userMessage, 1)
+  let attemptCount = 0
 
-    // Validate
-    const validation = validateLyrics(lyrics, occasion, toCharacters.length)
-
-    if (!validation.valid) {
-      console.warn('⚠️  Claude lyrics failed validation:', validation.errors)
-      errors.push(...validation.errors)
-      // Don't return yet, try again
-      throw new Error('Validation failed')
-    }
-
-    // Save to cache (skip for paid orders)
-    if (!options.isPaidOrder) {
-      saveToCache(cacheKey, validation.cleanedLyrics, 'claude')
-    }
-
-    return {
-      lyrics: validation.cleanedLyrics,
-      provider: 'claude',
-      attempts: 1,
-      errors: validation.warnings,
-      cached: false,
-      validationPassed: true,
-    }
-  } catch (error1) {
-    errors.push(`Attempt 1: ${error1 instanceof Error ? error1.message : 'Unknown error'}`)
-
-    // Wait 2 seconds before retry
-    await new Promise(resolve => setTimeout(resolve, 2000))
-
-    // Attempt 2: Retry after backoff
+  for (const model of getModelCandidates()) {
+    // Attempt 1 for this model
     try {
-      const lyrics = await callClaudeAPI(systemPrompt, userMessage, 2)
+      attemptCount += 1
+      const lyrics = await callClaudeAPI(systemPrompt, userMessage, model, attemptCount)
 
-      // Validate
       const validation = validateLyrics(lyrics, occasion, toCharacters.length)
 
       if (!validation.valid) {
-        console.warn('⚠️  Claude lyrics failed validation (attempt 2):', validation.errors)
+        console.warn('⚠️  Claude lyrics failed validation:', validation.errors)
         errors.push(...validation.errors)
-        // Return failure, will fallback to templates
-        return {
-          lyrics: '',
-          provider: 'template',
-          attempts: 2,
-          errors,
-          cached: false,
-          validationPassed: false,
-        }
+        throw new Error('Validation failed')
       }
 
-      // Save to cache (skip for paid orders)
       if (!options.isPaidOrder) {
         saveToCache(cacheKey, validation.cleanedLyrics, 'claude')
       }
@@ -323,24 +306,66 @@ export async function generateLyricsWithClaude(
       return {
         lyrics: validation.cleanedLyrics,
         provider: 'claude',
-        attempts: 2,
+        attempts: attemptCount,
         errors: validation.warnings,
         cached: false,
         validationPassed: true,
       }
-    } catch (error2) {
-      errors.push(`Attempt 2: ${error2 instanceof Error ? error2.message : 'Unknown error'}`)
+    } catch (error1) {
+      errors.push(`Attempt ${attemptCount} (${model}): ${error1 instanceof Error ? error1.message : 'Unknown error'}`)
 
-      // Both attempts failed, return failure
-      console.error('❌ Claude API failed after 2 attempts, will fallback to templates')
-      return {
-        lyrics: '',
-        provider: 'template',
-        attempts: 2,
-        errors,
-        cached: false,
-        validationPassed: false,
+      // If model is not found, move to next model without retrying
+      if (isNotFoundError(error1)) {
+        continue
+      }
+
+      // Wait 2 seconds before retry
+      await new Promise(resolve => setTimeout(resolve, 2000))
+
+      // Attempt 2 for this model
+      try {
+        attemptCount += 1
+        const lyrics = await callClaudeAPI(systemPrompt, userMessage, model, attemptCount)
+
+        const validation = validateLyrics(lyrics, occasion, toCharacters.length)
+
+        if (!validation.valid) {
+          console.warn('⚠️  Claude lyrics failed validation (attempt 2):', validation.errors)
+          errors.push(...validation.errors)
+          // Return failure, will fallback to next model/template
+          continue
+        }
+
+        if (!options.isPaidOrder) {
+          saveToCache(cacheKey, validation.cleanedLyrics, 'claude')
+        }
+
+        return {
+          lyrics: validation.cleanedLyrics,
+          provider: 'claude',
+          attempts: attemptCount,
+          errors: validation.warnings,
+          cached: false,
+          validationPassed: true,
+        }
+      } catch (error2) {
+        errors.push(`Attempt ${attemptCount} (${model}): ${error2 instanceof Error ? error2.message : 'Unknown error'}`)
+
+        // If second attempt also fails, move to next model
+        if (isNotFoundError(error2)) {
+          continue
+        }
       }
     }
+  }
+
+  console.error('❌ Claude API failed after trying all models, will fallback to templates')
+  return {
+    lyrics: '',
+    provider: 'template',
+    attempts: attemptCount,
+    errors,
+    cached: false,
+    validationPassed: false,
   }
 }

@@ -99,6 +99,7 @@ export default function SongForm() {
   const [copiedStyle, setCopiedStyle] = useState(false)
   const [copiedLyrics, setCopiedLyrics] = useState(false)
   const [expandedToCharacters, setExpandedToCharacters] = useState<Set<number>>(new Set())
+  const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false)
 
   const {
     register,
@@ -242,21 +243,32 @@ export default function SongForm() {
 
   // Test prompt creation - generates prompt from current form data
   const testPromptCreation = async () => {
+    setIsGeneratingPrompt(true)
+    setError(null)
     try {
-      const generatedPrompt = await generatePrompt(formValues.occasion || 'christmas', {
-        toCharacters: formValues.toCharacters || [],
-        senders: formValues.senders || [],
-        tone: formValues.tone,
-        songStyle: formValues.songStyle,
-        songMood: formValues.songMood,
-        tempo: formValues.tempo,
-        instruments: formValues.instruments,
-        vocalGender: formValues.vocalGender,
+      const response = await fetch('/api/generate-lyrics', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formValues,
+          occasion: formValues.occasion || 'christmas',
+        }),
       })
-      setValue('lyricsInput', generatedPrompt)
+
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Failed to generate prompt')
+      }
+
+      setValue('lyricsInput', result.lyrics)
     } catch (err) {
       console.error('Prompt generation failed', err)
       setError('Failed to generate prompt. Please try again.')
+    } finally {
+      setIsGeneratingPrompt(false)
     }
   }
 
@@ -911,12 +923,13 @@ A celebration of all that you do!`,
           <button
             type="button"
             onClick={testPromptCreation}
-            className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+            disabled={isGeneratingPrompt}
+            className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
-            Generate Prompt
+            {isGeneratingPrompt ? 'Generating...' : 'Generate Prompt'}
           </button>
         </div>
 
