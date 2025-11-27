@@ -81,7 +81,7 @@ function applyToneModifications(lyrics: string, tone: Tone): string {
  * Clean lyrics to ensure Safe Mode compliance
  * Removes or replaces forbidden patterns
  */
-function cleanLyrics(lyrics: string): string {
+export function cleanLyrics(lyrics: string): string {
   let cleaned = lyrics
 
   // Remove emojis (basic emoji range) - using string character codes instead of unicode property escapes
