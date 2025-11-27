@@ -169,6 +169,8 @@ export type Sender = {
   senderName: string
 }
 
+export type LyricProvider = 'claude' | 'template'
+
 /**
  * Order data schema (what gets stored in database)
  * This matches the database schema from supabase/01_create_orders_table.sql
@@ -176,26 +178,29 @@ export type Sender = {
 export const orderSchema = z.object({
   id: z.string().uuid(),
   customer_email: z.string().email(),
-  customer_name: z.string().optional(),
+  customer_name: z.string().nullable().optional(),
+  occasion: z.enum(['christmas', 'birthday', 'leaving-gift', 'roast', 'pets', 'kids']),
+  tone: z.enum(['funny', 'sweet', 'epic', 'rude', 'emotional']).nullable().optional(),
   song_title: z.string(),
   song_style: z.string(),
-  song_mood: z.string().optional(),
-  vocal_gender: z.string().optional(),
-  tempo: z.string().optional(),
-  instruments: z.array(z.string()).optional(),
+  song_mood: z.string().nullable().optional(),
+  vocal_gender: z.enum(['male', 'female', 'mixed', 'instrumental']).nullable().optional(),
+  tempo: z.enum(['slow', 'medium', 'fast', 'very-fast']).nullable().optional(),
+  instruments: z.union([z.array(z.string()), z.string()]).nullable().optional(),
   lyrics_input: z.string(),
-  stripe_session_id: z.string().optional(),
-  stripe_payment_intent_id: z.string().optional(),
-  amount_paid: z.number().int().positive().optional(),
+  stripe_session_id: z.string().nullable().optional(),
+  stripe_payment_intent_id: z.string().nullable().optional(),
+  amount_paid: z.number().int().positive().nullable().optional(),
   currency: z.enum(['gbp', 'usd', 'eur']).default('gbp'),
   status: z.enum(['pending', 'paid', 'processing', 'delivered', 'failed']),
-  mp3_url: z.string().optional(),
-  wav_url: z.string().optional(),
-  lyrics_url: z.string().optional(),
+  mp3_url: z.string().nullable().optional(),
+  wav_url: z.string().nullable().optional(),
+  lyrics_url: z.string().nullable().optional(),
+  lyric_provider: z.enum(['claude', 'template']).nullable().optional(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
-  paid_at: z.string().datetime().optional(),
-  delivered_at: z.string().datetime().optional(),
+  paid_at: z.string().datetime().nullable().optional(),
+  delivered_at: z.string().datetime().nullable().optional(),
 })
 
 export type Order = z.infer<typeof orderSchema>

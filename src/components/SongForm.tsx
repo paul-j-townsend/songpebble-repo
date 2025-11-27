@@ -241,18 +241,23 @@ export default function SongForm() {
   }
 
   // Test prompt creation - generates prompt from current form data
-  const testPromptCreation = () => {
-    const generatedPrompt = generatePrompt(formValues.occasion || 'christmas', {
-      toCharacters: formValues.toCharacters || [],
-      senders: formValues.senders || [],
-      tone: formValues.tone,
-      songStyle: formValues.songStyle,
-      songMood: formValues.songMood,
-      tempo: formValues.tempo,
-      instruments: formValues.instruments,
-      vocalGender: formValues.vocalGender,
-    })
-    setValue('lyricsInput', generatedPrompt)
+  const testPromptCreation = async () => {
+    try {
+      const generatedPrompt = await generatePrompt(formValues.occasion || 'christmas', {
+        toCharacters: formValues.toCharacters || [],
+        senders: formValues.senders || [],
+        tone: formValues.tone,
+        songStyle: formValues.songStyle,
+        songMood: formValues.songMood,
+        tempo: formValues.tempo,
+        instruments: formValues.instruments,
+        vocalGender: formValues.vocalGender,
+      })
+      setValue('lyricsInput', generatedPrompt)
+    } catch (err) {
+      console.error('Prompt generation failed', err)
+      setError('Failed to generate prompt. Please try again.')
+    }
   }
 
   // Clear all form fields (maintains minimum 1 recipient and 1 sender)

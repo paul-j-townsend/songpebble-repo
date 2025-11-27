@@ -1,5 +1,9 @@
 # SongPebble Development Progress
 
+## Claude Lyrics Setup (in progress)
+- Add `ANTHROPIC_API_KEY` and `USE_CLAUDE_FOR_LYRICS=true` to `.env.local` when enabling Claude-based lyric generation.
+- Claude integration, validation, and caching are in place; feature flag and provider tracking are being added now.
+
 ## ✅ Completed Phases
 
 ### Phase 1: Project Setup & Core Infrastructure (COMPLETE)

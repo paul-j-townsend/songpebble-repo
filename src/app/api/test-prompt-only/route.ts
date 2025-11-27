@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     const toCharacters: ToCharacter[] = formData.toCharacters || []
     const senders: Sender[] = formData.senders || []
 
-    const prompt = generatePrompt(formData.occasion || 'christmas', {
+    const prompt = await generatePrompt(formData.occasion || 'christmas', {
       toCharacters,
       senders,
       tone: formData.tone,

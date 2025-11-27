@@ -45,7 +45,9 @@ Stores customer orders and their payment/delivery status.
 **Key fields:**
 - `id` - UUID primary key
 - `customer_email` - Customer email address
+- `occasion`, `tone` - Occasion type and tone for lyrics
 - `song_title`, `song_style`, `lyrics_input` - Song details
+- `lyric_provider` - Source of lyrics generation (`claude` or template fallback)
 - `stripe_session_id` - Stripe Checkout session ID
 - `status` - Order status: `pending` → `paid` → `processing` → `delivered`
 - `mp3_url`, `wav_url`, `lyrics_url` - File storage URLs (populated after delivery)

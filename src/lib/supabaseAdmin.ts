@@ -40,18 +40,24 @@ export type Database = {
           id: string
           customer_email: string
           customer_name: string | null
+          occasion: 'christmas' | 'birthday' | 'leaving-gift' | 'roast' | 'pets' | 'kids'
+          tone: 'funny' | 'sweet' | 'epic' | 'rude' | 'emotional' | null
           song_title: string
           song_style: string
           song_mood: string | null
+          vocal_gender: 'male' | 'female' | 'mixed' | 'instrumental' | null
+          tempo: 'slow' | 'medium' | 'fast' | 'very-fast' | null
+          instruments: string[] | null
           lyrics_input: string
           stripe_session_id: string | null
           stripe_payment_intent_id: string | null
           amount_paid: number | null
-          currency: string
+          currency: 'gbp' | 'usd' | 'eur'
           status: 'pending' | 'paid' | 'processing' | 'delivered' | 'failed'
           mp3_url: string | null
           wav_url: string | null
           lyrics_url: string | null
+          lyric_provider: 'claude' | 'template' | null
           created_at: string
           updated_at: string
           paid_at: string | null
@@ -61,18 +67,24 @@ export type Database = {
           id?: string
           customer_email: string
           customer_name?: string | null
+          occasion: 'christmas' | 'birthday' | 'leaving-gift' | 'roast' | 'pets' | 'kids'
+          tone?: 'funny' | 'sweet' | 'epic' | 'rude' | 'emotional' | null
           song_title: string
           song_style: string
           song_mood?: string | null
+          vocal_gender?: 'male' | 'female' | 'mixed' | 'instrumental' | null
+          tempo?: 'slow' | 'medium' | 'fast' | 'very-fast' | null
+          instruments?: string[] | null
           lyrics_input: string
           stripe_session_id?: string | null
           stripe_payment_intent_id?: string | null
           amount_paid?: number | null
-          currency?: string
+          currency?: 'gbp' | 'usd' | 'eur'
           status?: 'pending' | 'paid' | 'processing' | 'delivered' | 'failed'
           mp3_url?: string | null
           wav_url?: string | null
           lyrics_url?: string | null
+          lyric_provider?: 'claude' | 'template' | null
           created_at?: string
           updated_at?: string
           paid_at?: string | null
@@ -82,18 +94,24 @@ export type Database = {
           id?: string
           customer_email?: string
           customer_name?: string | null
+          occasion?: 'christmas' | 'birthday' | 'leaving-gift' | 'roast' | 'pets' | 'kids'
+          tone?: 'funny' | 'sweet' | 'epic' | 'rude' | 'emotional' | null
           song_title?: string
           song_style?: string
           song_mood?: string | null
+          vocal_gender?: 'male' | 'female' | 'mixed' | 'instrumental' | null
+          tempo?: 'slow' | 'medium' | 'fast' | 'very-fast' | null
+          instruments?: string[] | null
           lyrics_input?: string
           stripe_session_id?: string | null
           stripe_payment_intent_id?: string | null
           amount_paid?: number | null
-          currency?: string
+          currency?: 'gbp' | 'usd' | 'eur'
           status?: 'pending' | 'paid' | 'processing' | 'delivered' | 'failed'
           mp3_url?: string | null
           wav_url?: string | null
           lyrics_url?: string | null
+          lyric_provider?: 'claude' | 'template' | null
           created_at?: string
           updated_at?: string
           paid_at?: string | null

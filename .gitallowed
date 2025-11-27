@@ -1,2 +1,7 @@
 tests/unit/validateEnv.test.ts:SUPABASE_SERVICE_ROLE_KEY
 tests/unit/validateEnv.test.ts:NEXT_PUBLIC_SUPABASE_ANON_KEY
+.env.example:SUPABASE_SERVICE_ROLE_KEY
+src/lib/supabaseAdmin.ts:SUPABASE_SERVICE_ROLE_KEY
+supabase/README.md:SUPABASE_SERVICE_ROLE_KEY
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
+process\.env\.SUPABASE_SERVICE_ROLE_KEY

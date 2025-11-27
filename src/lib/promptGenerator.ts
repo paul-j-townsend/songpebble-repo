@@ -177,6 +177,18 @@ export async function generatePrompt(
   data: Parameters<typeof generateSongPrompt>[0] & { tone?: Tone; songTitle?: string },
   options?: { skipCache?: boolean; isPaidOrder?: boolean }
 ): Promise<string> {
+  const flag = process.env.USE_CLAUDE_FOR_LYRICS
+  const useClaude = flag === undefined || flag === 'true' || flag === '1'
+
+  if (!useClaude) {
+    console.warn('Claude generation disabled via USE_CLAUDE_FOR_LYRICS, using template fallback')
+    return generateSafeModePrompt(occasion, {
+      toCharacters: data.toCharacters,
+      senders: data.senders,
+      tone: data.tone,
+    })
+  }
+
   // Try Claude API (with 2 retry attempts built-in)
   const result = await generateLyricsWithClaude(
     occasion,

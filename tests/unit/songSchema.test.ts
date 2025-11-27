@@ -8,6 +8,12 @@ const validPayload = {
   songStyle: 'Indie Pop',
   songMood: 'Joyful',
   lyricsInput: 'This is at least ten characters long.',
+  toCharacters: [
+    {
+      characterName: 'Alice',
+    },
+  ],
+  senders: [],
 }
 
 describe('songFormSchema', () => {
@@ -39,7 +45,7 @@ describe('songFormSchema', () => {
     expect(parsed.success).toBe(false)
     if (!parsed.success) {
       expect(parsed.error.flatten().fieldErrors.lyricsInput).toContain(
-        'Lyrics must be at least 10 characters'
+        'Lyrics must be at least 10 characters if provided'
       )
     }
   })
@@ -63,19 +69,6 @@ describe('songFormSchema', () => {
         },
       ],
     })
-    expect(parsed.success).toBe(true)
-  })
-
-  it('accepts empty toCharacters array', () => {
-    const parsed = songFormSchema.safeParse({
-      ...validPayload,
-      toCharacters: [],
-    })
-    expect(parsed.success).toBe(true)
-  })
-
-  it('accepts payload without toCharacters field', () => {
-    const parsed = songFormSchema.safeParse(validPayload)
     expect(parsed.success).toBe(true)
   })
 
@@ -172,6 +165,19 @@ describe('songFormSchema', () => {
     expect(parsed.success).toBe(false)
   })
 
+  it('rejects missing recipients', () => {
+    const parsed = songFormSchema.safeParse({
+      ...validPayload,
+      toCharacters: [],
+    })
+    expect(parsed.success).toBe(false)
+    if (!parsed.success) {
+      expect(parsed.error.flatten().fieldErrors.toCharacters).toContain(
+        'At least one recipient is required'
+      )
+    }
+  })
+
   it('rejects more than 8 toCharacters', () => {
     const nineCharacters = Array.from({ length: 9 }, (_, i) => ({
       characterName: `Character ${i + 1}`,
@@ -189,20 +195,17 @@ describe('songFormSchema', () => {
     }
   })
 
-  it('accepts exactly 8 toCharacters', () => {
-    const eightCharacters = Array.from({ length: 8 }, (_, i) => {
-      const genders: Array<'male' | 'female' | 'other'> = ['male', 'female', 'other']
-      return {
-        characterName: `Character ${i + 1}`,
-        characterGender: genders[i % 3],
-      }
-    })
+  it('rejects more than 6 recipients for christmas/roast', () => {
+    const eightCharacters = Array.from({ length: 8 }, (_, i) => ({
+      characterName: `Character ${i + 1}`,
+    }))
 
     const parsed = songFormSchema.safeParse({
       ...validPayload,
+      occasion: 'christmas',
       toCharacters: eightCharacters,
     })
-    expect(parsed.success).toBe(true)
+    expect(parsed.success).toBe(false)
   })
 
   // Senders Tests
@@ -211,7 +214,6 @@ describe('songFormSchema', () => {
       ...validPayload,
       senders: [
         { senderName: 'Mom and Dad' },
-        { senderName: 'Grandma' },
       ],
     })
     expect(parsed.success).toBe(true)
@@ -222,11 +224,6 @@ describe('songFormSchema', () => {
       ...validPayload,
       senders: [],
     })
-    expect(parsed.success).toBe(true)
-  })
-
-  it('accepts payload without senders field', () => {
-    const parsed = songFormSchema.safeParse(validPayload)
     expect(parsed.success).toBe(true)
   })
 
@@ -254,33 +251,20 @@ describe('songFormSchema', () => {
     expect(parsed.success).toBe(false)
   })
 
-  it('rejects more than 8 senders', () => {
-    const nineSenders = Array.from({ length: 9 }, (_, i) => ({
-      senderName: `Sender ${i + 1}`,
-    }))
-
+  it('rejects more than 1 sender', () => {
     const parsed = songFormSchema.safeParse({
       ...validPayload,
-      senders: nineSenders,
+      senders: [
+        { senderName: 'Sender 1' },
+        { senderName: 'Sender 2' },
+      ],
     })
     expect(parsed.success).toBe(false)
     if (!parsed.success) {
       expect(parsed.error.flatten().fieldErrors.senders).toContain(
-        'Maximum 8 senders allowed'
+        'Maximum 1 sender allowed'
       )
     }
-  })
-
-  it('accepts exactly 8 senders', () => {
-    const eightSenders = Array.from({ length: 8 }, (_, i) => ({
-      senderName: `Sender ${i + 1}`,
-    }))
-
-    const parsed = songFormSchema.safeParse({
-      ...validPayload,
-      senders: eightSenders,
-    })
-    expect(parsed.success).toBe(true)
   })
 
   it('accepts both toCharacters and senders together', () => {
@@ -302,9 +286,14 @@ describe('orderSchema', () => {
     id: '00000000-0000-0000-0000-000000000000',
     customer_email: 'listener@example.com',
     customer_name: 'Listener',
+    occasion: 'christmas' as const,
+    tone: 'funny' as const,
     song_title: 'My Track',
     song_style: 'Pop',
     song_mood: 'Calm',
+    vocal_gender: 'female' as const,
+    tempo: 'medium' as const,
+    instruments: ['guitar'],
     lyrics_input: 'Some lyrics',
     stripe_session_id: 'cs_test_123',
     stripe_payment_intent_id: 'pi_test_123',
@@ -314,6 +303,7 @@ describe('orderSchema', () => {
     mp3_url: null,
     wav_url: null,
     lyrics_url: null,
+    lyric_provider: 'claude' as const,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     paid_at: new Date().toISOString(),
@@ -321,7 +311,11 @@ describe('orderSchema', () => {
   }
 
   it('accepts persisted order payloads', () => {
-    expect(orderSchema.safeParse(baseOrder).success).toBe(true)
+    const parsed = orderSchema.safeParse(baseOrder)
+    if (!parsed.success) {
+      console.error(parsed.error.format())
+    }
+    expect(parsed.success).toBe(true)
   })
 
   it('rejects unsupported currencies', () => {
@@ -331,5 +325,21 @@ describe('orderSchema', () => {
     })
 
     expect(parsed.success).toBe(false)
+  })
+
+  it('allows nullables for optional generated fields', () => {
+    const parsed = orderSchema.safeParse({
+      ...baseOrder,
+      tone: null,
+      vocal_gender: null,
+      tempo: null,
+      instruments: null,
+      lyric_provider: null,
+    })
+
+    if (!parsed.success) {
+      console.error(parsed.error.format())
+    }
+    expect(parsed.success).toBe(true)
   })
 })
