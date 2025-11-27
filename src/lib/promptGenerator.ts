@@ -1,4 +1,6 @@
 import { ToCharacter, Sender } from './songSchema'
+import { generateSafeModePrompt, Occasion, Tone } from './safeMode'
+import { generateLyricsWithClaude } from './claudeService'
 
 /**
  * Formats an array of names with proper grammar
@@ -164,4 +166,55 @@ This song is dedicated to ${allCharacterNames}
 With love from ${recipientNames}.`
 
   return prompt
+}
+
+/**
+ * Generate song lyrics using Claude API with template fallback
+ * Uses Safe Mode generators as fallback if Claude fails
+ */
+export async function generatePrompt(
+  occasion: Occasion,
+  data: Parameters<typeof generateSongPrompt>[0] & { tone?: Tone; songTitle?: string },
+  options?: { skipCache?: boolean; isPaidOrder?: boolean }
+): Promise<string> {
+  // Try Claude API (with 2 retry attempts built-in)
+  const result = await generateLyricsWithClaude(
+    occasion,
+    {
+      toCharacters: data.toCharacters,
+      senders: data.senders,
+      tone: data.tone,
+      songTitle: data.songTitle,
+    },
+    options
+  )
+
+  if (result.provider === 'claude' && result.validationPassed) {
+    console.log(`✅ Generated lyrics with Claude (${result.attempts} attempts, cached: ${result.cached})`)
+    return result.lyrics
+  }
+
+  // Silent fallback to templates if Claude failed
+  console.warn('⚠️ Claude API failed after retries, using template fallback')
+  return generateSafeModePrompt(occasion, {
+    toCharacters: data.toCharacters,
+    senders: data.senders,
+    tone: data.tone,
+  })
+}
+
+/**
+ * Legacy function - kept for backward compatibility
+ * @deprecated Use generatePrompt with Safe Mode instead
+ */
+export function generateSongPromptLegacy(params: {
+  toCharacters: ToCharacter[]
+  senders: Sender[]
+  songStyle?: string
+  songMood?: string
+  tempo?: string
+  instruments?: string[]
+  vocalGender?: string
+}): string {
+  return generateSongPrompt(params)
 }

@@ -16,6 +16,11 @@ export const songFormSchema = z.object({
     .min(1, 'Name is required')
     .max(100, 'Name must be less than 100 characters'),
 
+  occasion: z.enum(['christmas', 'birthday', 'leaving-gift', 'roast', 'pets', 'kids']).default('christmas'),
+
+  // Tone selection (optional)
+  tone: z.enum(['funny', 'sweet', 'epic', 'rude', 'emotional']).optional(),
+
   // Song details
   songTitle: z
     .string()
@@ -112,6 +117,42 @@ export const songFormSchema = z.object({
     .max(1, 'Maximum 1 sender allowed')
     .default([]),
 })
+  .refine((data) => {
+    // Birthday and leaving-gift must have exactly 1 character
+    if (data.occasion === 'birthday' || data.occasion === 'leaving-gift') {
+      return data.toCharacters.length === 1
+    }
+    return true
+  }, {
+    message: 'Birthday and Leaving Gift songs must have exactly 1 recipient',
+    path: ['toCharacters'],
+  })
+  .refine((data) => {
+    // Christmas and roast: max 6 characters
+    if (data.occasion === 'christmas' || data.occasion === 'roast') {
+      return data.toCharacters.length <= 6
+    }
+    // Pets and kids: max 4 characters
+    if (data.occasion === 'pets' || data.occasion === 'kids') {
+      return data.toCharacters.length <= 4
+    }
+    return true
+  }, (data) => {
+    const occasion = data.occasion
+    if (occasion === 'christmas' || occasion === 'roast') {
+      return {
+        message: `${occasion === 'christmas' ? 'Christmas' : 'Roast'} songs can have maximum 6 recipients`,
+        path: ['toCharacters'],
+      }
+    }
+    if (occasion === 'pets' || occasion === 'kids') {
+      return {
+        message: `${occasion === 'pets' ? 'Pets' : 'Kids'} songs can have maximum 4 recipients`,
+        path: ['toCharacters'],
+      }
+    }
+    return { message: 'Invalid number of recipients', path: ['toCharacters'] }
+  })
 
 // Export the inferred TypeScript type
 export type SongFormData = z.infer<typeof songFormSchema>

@@ -4,7 +4,7 @@ import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { songFormSchema, type SongFormData } from '@/lib/songSchema'
 import { useState } from 'react'
-import { generateSongPrompt } from '@/lib/promptGenerator'
+import { generatePrompt } from '@/lib/promptGenerator'
 
 const SONG_STYLES = [
   'Pop',
@@ -39,6 +39,59 @@ const SONG_MOODS = [
   'Mysterious',
 ]
 
+// Helper function to get max characters based on occasion
+function getMaxCharactersForOccasion(occasion: string): number {
+  switch (occasion) {
+    case 'birthday':
+    case 'leaving-gift':
+      return 1
+    case 'pets':
+    case 'kids':
+      return 4
+    case 'christmas':
+    case 'roast':
+      return 6
+    default:
+      return 8
+  }
+}
+
+// Helper function to get label for recipients based on occasion
+function getRecipientLabel(occasion: string): string {
+  switch (occasion) {
+    case 'pets':
+      return 'Your Pets'
+    case 'kids':
+      return 'Children'
+    case 'birthday':
+      return 'Birthday Person'
+    case 'leaving-gift':
+      return 'Leaving Colleague'
+    default:
+      return 'Recipients'
+  }
+}
+
+// Helper function to get help text based on occasion
+function getRecipientHelpText(occasion: string): string {
+  switch (occasion) {
+    case 'birthday':
+      return 'Add the birthday person'
+    case 'leaving-gift':
+      return 'Add the person who is leaving'
+    case 'pets':
+      return 'Add up to 4 pets to celebrate'
+    case 'kids':
+      return 'Add up to 4 children'
+    case 'christmas':
+      return 'Add up to 6 recipients to personalize your Christmas song'
+    case 'roast':
+      return 'Add up to 6 people to roast in good fun'
+    default:
+      return 'Add recipients to personalize your song'
+  }
+}
+
 export default function SongForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -54,12 +107,14 @@ export default function SongForm() {
     reset,
     setValue,
     control,
+    getValues,
     formState: { errors },
   } = useForm<SongFormData>({
     resolver: zodResolver(songFormSchema),
     defaultValues: {
       customerEmail: 'user@example.com',
       customerName: 'John Doe',
+      occasion: 'christmas',
       songTitle: 'My Custom Song',
       songStyle: 'Pop',
       songMood: 'Playful',
@@ -187,9 +242,10 @@ export default function SongForm() {
 
   // Test prompt creation - generates prompt from current form data
   const testPromptCreation = () => {
-    const generatedPrompt = generateSongPrompt({
+    const generatedPrompt = generatePrompt(formValues.occasion || 'christmas', {
       toCharacters: formValues.toCharacters || [],
       senders: formValues.senders || [],
+      tone: formValues.tone,
       songStyle: formValues.songStyle,
       songMood: formValues.songMood,
       tempo: formValues.tempo,
@@ -369,6 +425,45 @@ A celebration of all that you do!`,
         />
         {errors.customerName && (
           <p className="mt-1 text-sm text-red-600">{errors.customerName.message}</p>
+        )}
+      </div>
+
+      {/* Occasion selector */}
+      <div className="flex flex-col gap-2">
+        <label className="font-medium text-slate-200">What is this song for?</label>
+        <select
+          {...register("occasion")}
+          className="rounded-md border border-slate-600 bg-slate-700 text-white p-2.5 focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="christmas">Christmas</option>
+          <option value="birthday">Birthday</option>
+          <option value="leaving-gift">Leaving Gift</option>
+          <option value="roast">Roast</option>
+          <option value="pets">Pets</option>
+          <option value="kids">Kids</option>
+        </select>
+      </div>
+
+      {/* Tone selector */}
+      <div>
+        <label htmlFor="tone" className="block text-sm font-medium text-gray-700 mb-1">
+          Tone <span className="text-gray-400 text-xs">(optional)</span>
+        </label>
+        <p className="text-xs text-gray-500 mb-2">Choose the mood and style of your song</p>
+        <select
+          id="tone"
+          {...register('tone')}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+        >
+          <option value="">Select a tone...</option>
+          <option value="funny">Funny</option>
+          <option value="sweet">Sweet</option>
+          <option value="epic">Epic</option>
+          <option value="rude">Rude</option>
+          <option value="emotional">Emotional</option>
+        </select>
+        {errors.tone && (
+          <p className="mt-1 text-sm text-red-600">{errors.tone.message}</p>
         )}
       </div>
 
@@ -571,15 +666,15 @@ A celebration of all that you do!`,
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-lg font-semibold text-gray-800">
-              To <span className="text-gray-400 text-sm font-normal">(recipients - optional)</span>
+              To: {getRecipientLabel(formValues.occasion || 'christmas')} <span className="text-gray-400 text-sm font-normal">(optional)</span>
             </h3>
             <p className="text-xs text-gray-500 mt-1">
-              Add up to 8 recipients to personalize your song
+              {getRecipientHelpText(formValues.occasion || 'christmas')}
             </p>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-sm text-gray-600">
-              {toCharacterFields.length}/8
+              {toCharacterFields.length}/{getMaxCharactersForOccasion(formValues.occasion || 'christmas')}
             </span>
             <button
               type="button"
@@ -597,7 +692,7 @@ A celebration of all that you do!`,
                   return newSet
                 })
               }}
-              disabled={toCharacterFields.length >= 8}
+              disabled={toCharacterFields.length >= getMaxCharactersForOccasion(formValues.occasion || 'christmas')}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-600-dark hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -916,33 +1011,92 @@ A celebration of all that you do!`,
 
         {/* Test with Form Data Button (Development Only) */}
         {process.env.NODE_ENV === 'development' && (
+          <>
+            <button
+              type="button"
+              onClick={async () => {
+                const testData = {
+                  ...formValues,
+                  senderName: senderName, // Include single sender name
+                }
+                console.log('🧪 [FORM] Testing with form data (WITH STYLE):', testData)
+                try {
+                  const response = await fetch('/api/test-box-api', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testData),
+                  })
+                  const result = await response.json()
+                  if (result.success) {
+                    alert(`✅ Test successful! Task ID: ${result.taskId}`)
+                  } else {
+                    alert(`❌ Test failed: ${result.error}`)
+                  }
+                } catch (error) {
+                  alert(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`)
+                }
+              }}
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors text-sm"
+            >
+              🧪 Test with Style Tags (Normal)
+            </button>
+
+            <button
+              type="button"
+              onClick={async () => {
+                const testData = {
+                  ...formValues,
+                  senderName: senderName,
+                }
+                console.log('🧪 [FORM] Testing PROMPT ONLY (no style tags):', testData)
+                try {
+                  const response = await fetch('/api/test-prompt-only', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testData),
+                  })
+                  const result = await response.json()
+                  if (result.success) {
+                    alert(`✅ Prompt-only test successful! Task ID: ${result.taskId}\n\nThis test sends ONLY the Safe Mode prompt with NO style tags.`)
+                  } else {
+                    alert(`❌ Test failed: ${result.error}`)
+                  }
+                } catch (error) {
+                  alert(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`)
+                }
+              }}
+              className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors text-sm"
+            >
+              🎯 Test PROMPT ONLY (No Style Tags)
+            </button>
+          </>
+        )}
+
+        {/* Debug button - only visible in development */}
+        {process.env.NODE_ENV === 'development' && (
           <button
             type="button"
+            className="w-full px-6 py-3 rounded-lg bg-slate-700 hover:bg-slate-600 text-white font-medium transition-colors border border-slate-600"
             onClick={async () => {
-              const testData = {
-                ...formValues,
-                senderName: senderName, // Include single sender name
-              }
-              console.log('🧪 [FORM] Testing with form data:', testData)
+              const values = getValues()
               try {
-                const response = await fetch('/api/test-box-api', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(testData),
+                const response = await fetch("/api/song-requests-debug", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(values),
                 })
                 const result = await response.json()
-                if (result.success) {
-                  alert(`✅ Test successful! Task ID: ${result.taskId}`)
+                if (response.ok) {
+                  alert(`✅ Debug request sent successfully!\n\nCheck console for details.`)
                 } else {
-                  alert(`❌ Test failed: ${result.error}`)
+                  alert(`❌ Debug request failed:\n${result.error}`)
                 }
               } catch (error) {
-                alert(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`)
+                alert(`❌ Debug request error:\n${error}`)
               }
             }}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors text-sm"
           >
-            🧪 Test API with Form Data (Dev Only)
+            🐛 Send Debug Request (Dev Only)
           </button>
         )}
 

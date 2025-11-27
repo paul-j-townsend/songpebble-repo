@@ -38,6 +38,8 @@ export async function POST(request: NextRequest) {
       .insert({
         customer_email: formData.customerEmail,
         customer_name: formData.customerName,
+        occasion: formData.occasion || 'christmas',
+        tone: formData.tone || null,
         song_title: formData.songTitle,
         song_style: formData.songStyle,
         song_mood: formData.songMood || null,
